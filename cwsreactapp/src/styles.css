@@ -1,0 +1,63 @@
+.rag-red {
+  background-color: red;
+}
+.rag-green {
+  background-color: green;
+}
+.rag-lime {
+  background-color: lime;
+}
+.rag-yellow {
+  background-color: yellow;
+}
+.rag-orange {
+  background-color: darkorange;
+}
+.rag-grey {
+  background-color: lightgrey;
+}
+
+.rag-cream {
+    background-color: #FFFFCC;
+}
+.rag-blue {
+    background-color: #3366FF;
+}
+.rag-green1 {
+    background-color: #CCFFCC;
+}
+.rag-green2 {
+    background-color: #33FF66;
+}
+.rag-green3 {
+    background-color: #33CC33;
+}
+.rag-green4 {
+    background-color: #339933;
+}
+
+.pageheader {
+  display: flex;
+  flex: 1 1 5%;
+  min-height: 2em;
+  font-size: 1em;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 20px 0px 20px 0px;
+  margin-bottom: 6px;
+  background-color: rgb(107, 126, 187);
+  display: block;
+}
+
+.header {
+  display: flex;
+  flex: 1 1 5%;
+  min-height: 2em;
+  font-size: 1em;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 20px 0px 20px 0px;
+  margin-bottom: 6px;
+  background-color: black;
+  display: block;
+}

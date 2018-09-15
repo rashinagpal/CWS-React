@@ -1,0 +1,12 @@
+export const LANDING = '/cws';
+export const SIGN_UP = '/cws/signup';
+export const SIGN_IN = '/cws/signin';
+export const PASSWORD_FORGET = '/cws/pw-forget';
+export const HOME = '/cws/home';
+export const ACCOUNT = '/cws/account';
+export const SelectaPatient = '/cws/selectapatient';
+export const REPORT = '/cws/report';
+export const NEW_FUNCTIONAL_SCORE = '/cws/functionality';
+export const IMPAIRMENT_OF_BODY_FUNCTIONS = '/cws/impairmentofbodyfunctionsreport';
+export const CAPACITY_AND_PERFORMANCE = '/cws/capacityandperformancereport';
+export const ENVIRONMENT = '/cws/environmentreport';

@@ -1,0 +1,7 @@
+# dependencies
+cwsreactapp/node_modules
+functionalscoring/node_modules
+patientlist/node_modules
+
+# build
+cwsreactapp/build
