@@ -22,8 +22,8 @@ class HomePage extends Component {
 
     return (
       <div>
-        <h1>This is CWS-React Application</h1>
-		<Link to={routes.NEW_FUNCTIONAL_SCORE}>CWS-React</Link>
+        <h1>TBI Application</h1>
+		<Link to={routes.NEW_FUNCTIONAL_SCORE}>TBI Demo</Link>
 
        { !!users && <UserList users={users} /> }
       </div>
