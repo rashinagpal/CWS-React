@@ -3,12 +3,12 @@ import 'firebase/auth';
 import 'firebase/database';
 
 const config = {
-  apiKey: "AIzaSyB2GBtEiBHLktCPms0OsUcIuNtaORO_QI8",
-  authDomain: "cwsquickforms.firebaseapp.com",
-  databaseURL: "https://cwsquickforms.firebaseio.com",
-  projectId: "cwsquickforms",
-  storageBucket: "cwsquickforms.appspot.com",
-  messagingSenderId: "939403593092"
+  apiKey: "AIzaSyA9p5dXDRIbiRRS9W8-uuld6Q4U11c66Vs",
+  authDomain: "tbi-demo.firebaseapp.com",
+  databaseURL: "https://tbi-demo.firebaseio.com",
+  projectId: "tbi-demo",
+  storageBucket: "tbi-demo.appspot.com",
+  messagingSenderId: "873220308790"
 };
 
 if (!firebase.apps.length) {

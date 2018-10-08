@@ -40,18 +40,20 @@ class ImpairmentofBodyFunctionsPage extends Component {
     var rootRef = firebase
       .database()
       .ref()
-      .child("23 - Austin Chamney - 000001 - 02 Jan 1991")
-      .child("ScoreBoard-Impairment of Body Functions");
+      .child("patient")
+      .child("0")
+      .child("reports")
+      .child("Impairment of Body Functions");
 
     var Data = [];
 
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
       Data.push(snapshot.val());
-    });
-
-    this.setState({
-      rowData: Data
+      
+      this.setState({
+        rowData: Data
+      });
     });
   }
 
@@ -65,14 +67,14 @@ class ImpairmentofBodyFunctionsPage extends Component {
         }
       },
       {
-        headerName: "Sub Domain",
+        headerName: "Subdomain",
         field: "subDomain",
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
       },
       {
-        headerName: "CareProvider",
+        headerName: "Care Provider",
         field: "careProvider",
         width: 100,
         cellClassRules: {
@@ -80,7 +82,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
         }
       },
       {
-        headerName: "AssessmentDate",
+        headerName: "Assessment Date",
         field: "assessmentDate",
         width: 100,
         cellClassRules: {
@@ -154,7 +156,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
         <Navigation1 />
 
         <div style={containerStyle} className="ag-fresh">
-          <h1>Impairment of Body Function </h1>
+          <h1>Impairment of Body Functions</h1>
           <AgGridReact
             // properties
             columnDefs={this.state.columnDefs}
