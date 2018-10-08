@@ -10,7 +10,7 @@ class Environment extends Component {
   constructor() {
     super();
     this.state = {
-      name: "ScoreBoard-Environment",
+      name: "Environment",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
@@ -99,6 +99,7 @@ class Environment extends Component {
       assessmentDate: Date()
     };
     console.log(object);
+    alert("submitted");
     postRef.push(object);
   };
 

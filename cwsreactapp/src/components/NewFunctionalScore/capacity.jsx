@@ -114,6 +114,7 @@ class Capacity extends Component {
       assessmentDate: Date()
     };
     console.log(object);
+    alert("submitted");
     postRef.push(object);
   };
 
