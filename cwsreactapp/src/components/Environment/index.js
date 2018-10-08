@@ -40,7 +40,10 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
     var rootRef = firebase
       .database()
       .ref()
-      .child("23 - Austin Chamney - 000001 - 02 Jan 1991").child("ScoreBoard-Environment");
+      .child("patient")
+      .child("0")
+      .child("reports")
+      .child("Environment");
 
     var Data = [];
 	
