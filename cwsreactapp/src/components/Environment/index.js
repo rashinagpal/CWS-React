@@ -41,7 +41,7 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
       .database()
       .ref()
       .child("patient")
-      .child("0")
+      .child("0") // TODO: Update to dynamic patientVal
       .child("reports")
       .child("Environment");
 

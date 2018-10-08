@@ -9,7 +9,7 @@ class Capacity extends Component {
   constructor() {
     super();
     this.state = {
-      name: "ScoreBoard-Capacity and Performance",
+      name: "Capacity and Performance",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
@@ -19,7 +19,7 @@ class Capacity extends Component {
       selectedScore_c: {},
       selectedScore_p: {},
       c: "",
-      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
+      patientVal: "0" // TODO: Update to dynamic patientVal
     };
   }
 
@@ -100,7 +100,9 @@ class Capacity extends Component {
     var postRef = firebase
       .database()
       .ref()
+      .child("patient")
       .child(this.state.patientVal)
+      .child("reports")
       .child(this.state.name);
     const object = {
       careProvider: "testProvider",

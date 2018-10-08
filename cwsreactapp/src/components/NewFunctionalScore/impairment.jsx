@@ -18,7 +18,7 @@ class Impairment extends Component {
   constructor() {
     super();
     this.state = {
-      name: "ScoreBoard-Impairment of Body Functions",
+      name: "Impairment of Body Functions",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
@@ -26,7 +26,7 @@ class Impairment extends Component {
       scores: [],
       selectedScore: {},
       c: "",
-      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
+      patientVal: "0" // TODO: Update to dynamic patientVal
     };
   }
 
@@ -37,13 +37,9 @@ class Impairment extends Component {
   //firebase fetch
   getnewData(index) {
     var Ref = firebase.database().ref();
-    var rootRef = Ref.child("impairement_of_body_functions").child("domain");
-    var rootRef2 = Ref.child("impairement_of_body_functions").child(
-      "subDomain"
-    );
-    var rootRef3 = Ref.child("Functional_Scores").child(
-      "impairement_of_body_functions"
-    );
+    var rootRef = Ref.child("impairment_of_body_functions").child("domain");
+    var rootRef2 = Ref.child("impairment_of_body_functions").child("subDomain");
+    var rootRef3 = Ref.child("Functional_Scores").child("impairment_of_body_functions");
 
     rootRef.on("child_added", snapshot => {
       let element = {
@@ -102,7 +98,9 @@ class Impairment extends Component {
     var postRef = firebase
       .database()
       .ref()
+      .child("patient")
       .child(this.state.patientVal)
+      .child("reports")
       .child(this.state.name);
 
     const object = {

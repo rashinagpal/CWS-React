@@ -18,7 +18,7 @@ class Environment extends Component {
       scores: [],
       selectedScore: {},
       c: "",
-      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
+      patientVal: "0" // TODO: Update to dynamic patientVal
     };
   }
 
@@ -86,7 +86,9 @@ class Environment extends Component {
     var postRef = firebase
       .database()
       .ref()
+      .child("patient")
       .child(this.state.patientVal)
+      .child("reports")
       .child(this.state.name);
     const object = {
       careProvider: "testProvider",
