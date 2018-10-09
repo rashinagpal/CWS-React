@@ -88,7 +88,6 @@ class Environment extends Component {
   };
 
   handleDateChange = date => {
-    console.log(date);
     this.setState({ date });
   };
 

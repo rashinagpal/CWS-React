@@ -102,7 +102,6 @@ class Capacity extends Component {
   };
 
   handleDateChange = date => {
-    console.log(date);
     this.setState({ date });
   };
 
