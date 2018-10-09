@@ -26,7 +26,7 @@ class Impairment extends Component {
       options2: [],
       scores: [],
       selectedScore: {},
-      date: "",
+      date: moment(),
       c: "",
       patientVal: "0" // TODO: Update to dynamic patientVal
     };

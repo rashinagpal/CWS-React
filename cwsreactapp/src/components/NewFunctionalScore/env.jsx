@@ -7,6 +7,7 @@ import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
+import moment from "moment";
 import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 
@@ -21,7 +22,7 @@ class Environment extends Component {
       options2: [],
       scores: [],
       selectedScore: {},
-      date: "",
+      date: moment(),
       c: "",
       patientVal: "0" // TODO: Update to dynamic patientVal
     };
