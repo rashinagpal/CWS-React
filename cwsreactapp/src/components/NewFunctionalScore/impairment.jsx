@@ -9,6 +9,7 @@ import Navigation1 from "./Navigation1";
 import "../.././styles.css";
 import moment, { now } from "moment";
 import DatePicker from "react-datepicker";
+import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 
 import withAuthorization from "../Session/withAuthorization";
 import { inject, observer } from "mobx-react";
@@ -25,6 +26,7 @@ class Impairment extends Component {
       options2: [],
       scores: [],
       selectedScore: {},
+      date: "",
       c: "",
       patientVal: "0" // TODO: Update to dynamic patientVal
     };
@@ -92,6 +94,11 @@ class Impairment extends Component {
     this.setState({ c: e.target.value });
   };
 
+  handleDateChange = date => {
+    console.log(date);
+    this.setState({ date });
+  };
+
   handleSubmit = id => {
     console.log(id);
 
@@ -109,7 +116,7 @@ class Impairment extends Component {
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: Date()
+      assessmentDate: this.state.date.format("DD-MMM-YY")
     };
     console.log(object);
     alert("submitted");
@@ -128,7 +135,7 @@ class Impairment extends Component {
     return (
       <div>
         <Navigation1 />
-        <Header />
+        <Header name="Impairment of Body Functions" />
 
         <p className="m-2">
           <b>Select Domain</b>
@@ -162,6 +169,17 @@ class Impairment extends Component {
           onChange={this.handleChange3}
           value={this.state.selectedScore.querySelector}
         />
+
+        <p className="m-2">
+          <b>Select Assessment Date</b>
+        </p>
+        <DatePicker
+          className="m-2"
+          name="form-field-name"
+          selected={this.state.date} 
+          onChange={this.handleDateChange}
+        />
+
         <p className="m-2">
           <b>Comment</b>
         </p>

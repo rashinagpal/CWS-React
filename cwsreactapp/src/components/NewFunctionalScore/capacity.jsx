@@ -2,9 +2,13 @@ import React, { Component } from "react";
 import * as firebase from "firebase";
 import Select from "react-select";
 import Dropdown from "react-dropdown";
+import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
+import DatePicker from "react-datepicker";
+import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
+
 class Capacity extends Component {
   constructor() {
     super();
@@ -18,6 +22,7 @@ class Capacity extends Component {
       scores_p: [],
       selectedScore_c: {},
       selectedScore_p: {},
+      date: "",
       c: "",
       patientVal: "0" // TODO: Update to dynamic patientVal
     };
@@ -95,6 +100,11 @@ class Capacity extends Component {
     this.setState({ c: e.target.value });
   };
 
+  handleDateChange = date => {
+    console.log(date);
+    this.setState({ date });
+  };
+
   handleSubmit = e => {
     console.log("submitted");
     var postRef = firebase
@@ -111,7 +121,7 @@ class Capacity extends Component {
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       capacitycomment: this.state.c,
-      assessmentDate: Date()
+      assessmentDate: this.state.date.format("DD-MMM-YY")
     };
     console.log(object);
     alert("submitted");
@@ -126,6 +136,8 @@ class Capacity extends Component {
     return (
       <div>
         <Navigation1 />
+        <Header name="Capacity and Performance" />
+
         <p className="m-2">
           <b>Select Domain</b>
         </p>
@@ -169,6 +181,16 @@ class Capacity extends Component {
           options={this.state.scores_p}
           onChange={this.handleChange4}
           value={this.state.selectedScore_p}
+        />
+
+        <p className="m-2">
+          <b>Select Assessment Date</b>
+        </p>
+        <DatePicker
+          className="m-2"
+          name="form-field-name"
+          selected={this.state.date}
+          onChange={this.handleDateChange}
         />
 
         <p className="m-2">

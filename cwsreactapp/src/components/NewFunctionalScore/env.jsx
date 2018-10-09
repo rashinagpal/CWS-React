@@ -3,9 +3,13 @@ import React, { Component } from "react";
 import * as firebase from "firebase";
 import Select from "react-select";
 import Dropdown from "react-dropdown";
+import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
+import DatePicker from "react-datepicker";
+import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
+
 class Environment extends Component {
   constructor() {
     super();
@@ -17,6 +21,7 @@ class Environment extends Component {
       options2: [],
       scores: [],
       selectedScore: {},
+      date: "",
       c: "",
       patientVal: "0" // TODO: Update to dynamic patientVal
     };
@@ -81,6 +86,11 @@ class Environment extends Component {
     this.setState({ c: e.target.value });
   };
 
+  handleDateChange = date => {
+    console.log(date);
+    this.setState({ date });
+  };
+
   handleSubmit = e => {
     console.log("submitted");
     var postRef = firebase
@@ -96,7 +106,7 @@ class Environment extends Component {
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: Date()
+      assessmentDate: this.state.date.format("DD-MMM-YY")
     };
     console.log(object);
     alert("submitted");
@@ -111,6 +121,8 @@ class Environment extends Component {
     return (
       <div>
         <Navigation1 />
+        <Header name="Environment" />
+
         <p className="m-2">
           <b>Select Domain</b>
         </p>
@@ -144,6 +156,17 @@ class Environment extends Component {
           onChange={this.handleChange3}
           value={this.state.selectedScore}
         />
+
+        <p className="m-2">
+          <b>Select Assessment Date</b>
+        </p>
+        <DatePicker
+          className="m-2"
+          name="form-field-name"
+          selected={this.state.date}
+          onChange={this.handleDateChange}
+        />
+
         <p className="m-2">
           <b>Comment</b>
         </p>
