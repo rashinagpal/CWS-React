@@ -45,10 +45,16 @@ class ImpairmentofBodyFunctionsPage extends Component {
       .child("reports")
       .child("Impairment of Body Functions");
 
-    rootRef.on('value', (snapshot) => {
-      this.setState({
-        rowData: snapshot.val()
-      });
+    let data = [];
+
+    rootRef.on("child_added", snapshot => {
+      // Store all the labels in array
+      data.push(snapshot.val());
+      console.log(data);
+
+    });
+    this.setState({
+      rowData: data
     });
   }
 

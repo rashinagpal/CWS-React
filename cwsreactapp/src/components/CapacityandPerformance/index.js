@@ -45,10 +45,16 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
       .child("reports")
       .child("Capacity and Performance");
 
-      rootRef.on('value', (snapshot) => {
-          this.setState({
-              rowData: snapshot.val()
-          });
+      let data = [];
+	
+      rootRef.on("child_added", snapshot => {
+        // Store all the labels in array
+        data.push(snapshot.val());
+       console.log(data);
+       
+       });	    
+        this.setState({
+        rowData: data
       });
   }
 
