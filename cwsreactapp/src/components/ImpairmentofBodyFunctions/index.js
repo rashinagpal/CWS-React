@@ -5,6 +5,7 @@ import * as routes from "../../constants/routes";
 
 import { inject, observer } from "mobx-react";
 import { compose } from "recompose";
+import Select from "react-select";
 
 import withAuthorization from "../Session/withAuthorization";
 import { db } from "../../firebase";
@@ -19,6 +20,9 @@ class ImpairmentofBodyFunctionsPage extends Component {
     super(props);
 
     this.state = {
+      patients: [],
+      selectedPatient: {},
+      patientName: "",
       columnDefs: this.createColumnDefs(),
       rowData: ""
     };
@@ -32,16 +36,32 @@ class ImpairmentofBodyFunctionsPage extends Component {
   }
 
   componentWillMount() {
-    this.getData(66);
+    this.getPatients();
   }
 
-  //firebase fetch
-  getData(index) {
+  getPatients() {
+    var rootRef = firebase
+      .database()
+      .ref()
+      .child("patient");
+
+    rootRef.on("child_added", snapshot => {
+      let element = {
+        value: snapshot.val().label.split(' - ')[0],
+        label: snapshot.val().label
+      };
+      this.setState(prevState => ({
+        patients: [...prevState.patients, element]
+      }));
+    });
+  }
+
+  getReports(patientId) {
     var rootRef = firebase
       .database()
       .ref()
       .child("patient")
-      .child("0")
+      .child(patientId)
       .child("reports")
       .child("Impairment of Body Functions");
 
@@ -50,13 +70,17 @@ class ImpairmentofBodyFunctionsPage extends Component {
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
       data.push(snapshot.val());
-      console.log(data);
 
     });
     this.setState({
       rowData: data
     });
   }
+
+  handleChangePatient = selectedPatient => {
+    this.getReports(selectedPatient.value);
+    this.setState({ selectedPatient });
+  };
 
   createColumnDefs() {
     return [
@@ -154,6 +178,15 @@ class ImpairmentofBodyFunctionsPage extends Component {
 
     return (
       <div>
+        <b>Select Patient</b>
+        <Select
+          className="m-2"
+          options={this.state.patients}
+          value={this.state.selectedPatient.querySelector}
+          onChange={this.handleChangePatient}
+          patientName={this.state.selectedPatient.label}
+        />
+
         <Navigation1 />
 
         <div style={containerStyle} className="ag-fresh">
