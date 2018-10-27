@@ -111,14 +111,19 @@ class Impairment extends Component {
 
     const object = {
       careProvider: "testProvider",
-      ModerateImpairment: this.state.selectedScore.value,
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: this.state.date.format("DD-MMM-YY")
+      assessmentDate: this.state.date.format("DD-MMM-YY"),
+      ...(this.state.selectedScore.value == 0) && { NoImpairment: 0 },
+      ...(this.state.selectedScore.value == 1) && { MildImpairment: 1 },
+      ...(this.state.selectedScore.value == 2) && { ModerateImpairment: 2 },
+      ...(this.state.selectedScore.value == 3) && { SevereImpairment: 3 },
+      ...(this.state.selectedScore.value == 4) && { CompleteImpairment: 4 },
+
     };
     console.log(object);
-    alert("submitted");
+    alert("Report submitted successfully");
     postRef.push(object);
   };
 
