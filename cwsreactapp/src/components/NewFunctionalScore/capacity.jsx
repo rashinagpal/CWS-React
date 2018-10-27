@@ -116,15 +116,25 @@ class Capacity extends Component {
       .child(this.state.name);
     const object = {
       careProvider: "testProvider",
-      ModerateImpairmentC: this.state.selectedScore_c.value,
-      ModerateImpairmentP: this.state.selectedScore_p.value,
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       capacitycomment: this.state.c,
-      assessmentDate: this.state.date.format("DD-MMM-YY")
+      assessmentDate: this.state.date.format("DD-MMM-YY"),
+
+      ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
+      ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
+      ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
+      ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
+      ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
+
+      ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
+      ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
+      ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
+      ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
+      ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
     };
     console.log(object);
-    alert("submitted");
+    alert("Report submitted successfully");
     postRef.push(object);
   };
 

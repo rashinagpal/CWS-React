@@ -102,14 +102,24 @@ class Environment extends Component {
       .child(this.state.name);
     const object = {
       careProvider: "testProvider",
-      Moderatebarrier: this.state.selectedScore.value,
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: this.state.date.format("DD-MMM-YY")
+      assessmentDate: this.state.date.format("DD-MMM-YY"),
+
+      ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
+      ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
+      ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
+      ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
+
+      ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
+      ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
+      ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
+      ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
+      ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
     };
     console.log(object);
-    alert("submitted");
+    alert("Report submitted successfully");
     postRef.push(object);
   };
 
