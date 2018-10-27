@@ -11,6 +11,10 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 
+import withAuthorization from "../Session/withAuthorization";
+import { inject, observer } from "mobx-react";
+import { compose } from "recompose";
+
 class Environment extends Component {
   constructor() {
     super();
@@ -92,7 +96,6 @@ class Environment extends Component {
   };
 
   handleSubmit = e => {
-    console.log("submitted");
     var postRef = firebase
       .database()
       .ref()
@@ -101,7 +104,7 @@ class Environment extends Component {
       .child("reports")
       .child(this.state.name);
     const object = {
-      careProvider: "testProvider",
+      careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
@@ -118,10 +121,15 @@ class Environment extends Component {
       ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
       ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
     };
-    console.log(object);
     alert("Report submitted successfully");
     postRef.push(object);
   };
+
+  getCurrentUser() {
+    let user = this.props.sessionStore.authUser.email;
+    user = user.split('@')[0];
+    return user;
+  }
 
   render() {
     const filteredOptions = this.state.options2.filter(
@@ -199,4 +207,10 @@ class Environment extends Component {
   }
 }
 
-export default Environment;
+const authCondition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(authCondition),
+  inject("sessionStore"),
+  observer
+)(Environment);

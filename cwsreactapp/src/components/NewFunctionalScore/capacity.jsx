@@ -10,6 +10,11 @@ import moment from "moment";
 import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 
+import withAuthorization from "../Session/withAuthorization";
+import { inject, observer } from "mobx-react";
+import { compose } from "recompose";
+
+
 class Capacity extends Component {
   constructor() {
     super();
@@ -106,7 +111,6 @@ class Capacity extends Component {
   };
 
   handleSubmit = e => {
-    console.log("submitted");
     var postRef = firebase
       .database()
       .ref()
@@ -115,7 +119,7 @@ class Capacity extends Component {
       .child("reports")
       .child(this.state.name);
     const object = {
-      careProvider: "testProvider",
+      careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       capacitycomment: this.state.c,
@@ -133,10 +137,15 @@ class Capacity extends Component {
       ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
       ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
     };
-    console.log(object);
     alert("Report submitted successfully");
     postRef.push(object);
   };
+
+  getCurrentUser() {
+    let user = this.props.sessionStore.authUser.email;
+    user = user.split('@')[0];
+    return user;
+  }
 
   render() {
     const filteredOptions = this.state.options2.filter(
@@ -224,4 +233,10 @@ class Capacity extends Component {
   }
 }
 
-export default Capacity;
+const authCondition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(authCondition),
+  inject("sessionStore"),
+  observer
+)(Capacity);

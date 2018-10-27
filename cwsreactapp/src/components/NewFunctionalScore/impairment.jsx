@@ -87,6 +87,7 @@ class Impairment extends Component {
   };
 
   handleChange3 = selectedScore => {
+    this.getCurrentUser();
     this.setState({ selectedScore });
   };
 
@@ -110,7 +111,7 @@ class Impairment extends Component {
       .child(this.state.name);
 
     const object = {
-      careProvider: "testProvider",
+      careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
@@ -122,14 +123,15 @@ class Impairment extends Component {
       ...(this.state.selectedScore.value == 3) && { SevereImpairment: 3 },
       ...(this.state.selectedScore.value == 4) && { CompleteImpairment: 4 }
     };
-    console.log(object);
     alert("Report submitted successfully");
     postRef.push(object);
   };
 
-  handleHeader = () => {
-    console.log("event handler called");
-  };
+  getCurrentUser() {
+    let user = this.props.sessionStore.authUser.email;
+    user = user.split('@')[0];
+    return user;
+  }
 
   render() {
     const filteredOptions = this.state.options2.filter(
