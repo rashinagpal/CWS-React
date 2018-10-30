@@ -10,6 +10,7 @@ import * as firebase from "firebase";
 import "firebase/database";
 
 import Navigation1 from "../NewFunctionalScore/Navigation1";
+import ImpairmentModal from '../Modal/ImpairmentModal';
 
 const reportCategories = [
   { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions'},
@@ -182,6 +183,10 @@ class NewFunctionalScorePage extends Component {
     ];
   }
 
+  handleClose() {
+    // this.setState(({  }));
+  }
+
   render() {
     let containerStyle = {
       height: 500,
@@ -191,6 +196,10 @@ class NewFunctionalScorePage extends Component {
     return (
       <div>
         <b>Select Patient</b>
+        <ImpairmentModal
+          isSelectedd={true}
+          handleClose={this.handleClose}
+        />
         <Select
           className="m-2"
           options={this.state.patients}
