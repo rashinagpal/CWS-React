@@ -70,7 +70,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
       data.push(snapshot.val());
-
+      console.log(data);
     });
     this.setState({
       rowData: data

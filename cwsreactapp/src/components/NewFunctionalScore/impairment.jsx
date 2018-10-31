@@ -57,7 +57,8 @@ class Impairment extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value
+        value: snapshot.val().value,
+        id: snapshot.val().id
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -110,12 +111,14 @@ class Impairment extends Component {
       .child("reports")
       .child(this.state.name);
 
+      
     const object = {
       careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
       assessmentDate: this.state.date.format("DD-MMM-YY"),
+      id: this.state.selectedOption2.id,
 
       ...(this.state.selectedScore.value == 0) && { NoImpairment: 0 },
       ...(this.state.selectedScore.value == 1) && { MildImpairment: 1 },

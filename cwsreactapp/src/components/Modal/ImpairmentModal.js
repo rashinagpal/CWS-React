@@ -27,7 +27,6 @@ export default class ImpairmentModal extends Component {
     }
 
     componentWillMount() {
-        console.log(this.props);
         this.getnewData(66);
     }
 

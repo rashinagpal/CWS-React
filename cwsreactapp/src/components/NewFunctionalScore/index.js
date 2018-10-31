@@ -61,10 +61,8 @@ class NewFunctionalScorePage extends Component {
   }
 
   getReports() {
-    console.log('Checking reports');
     // Check if both a patient and category have been selected before querying the DB
     if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
-      console.log('Querying DB');
       var rootRef = firebase
         .database()
         .ref()
