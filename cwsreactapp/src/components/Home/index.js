@@ -6,7 +6,6 @@ import * as routes from '../../constants/routes';
 
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
-import {AgGridReact} from "ag-grid-react";
 
 class HomePage extends Component {
   componentDidMount() {

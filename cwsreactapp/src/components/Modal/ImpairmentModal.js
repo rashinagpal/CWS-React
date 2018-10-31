@@ -9,11 +9,7 @@ import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 
-import withAuthorization from "../Session/withAuthorization";
-import { inject, observer } from "mobx-react";
-import { compose } from "recompose";
-
-class ImpairmentModal extends Component {
+export default class ImpairmentModal extends Component {
     constructor() {
         super();
         this.state = {
@@ -31,7 +27,7 @@ class ImpairmentModal extends Component {
     }
 
     componentWillMount() {
-        console.log('Modal test')
+        console.log(this.props);
         this.getnewData(66);
     }
 
@@ -124,6 +120,7 @@ class ImpairmentModal extends Component {
         };
         alert("Report submitted successfully");
         postRef.push(object);
+        this.props.handleCloseModal();
     };
 
     getCurrentUser() {
@@ -142,8 +139,8 @@ class ImpairmentModal extends Component {
         return (
             <div>
                 <Modal
-                    isOpen={true}
-                    onRequestClose={this.props.handleClose}
+                    isOpen={!!this.props.selectedModal}
+                    onRequestClose={this.props.handleCloseModal}
                     contentLabel="Test"
                     closeTimeoutMS={200}
                     className="modal"
@@ -219,10 +216,3 @@ class ImpairmentModal extends Component {
     }
 }
 
-const authCondition = authUser => !!authUser;
-
-export default compose(
-    withAuthorization(authCondition),
-    inject("sessionStore"),
-    observer
-)(ImpairmentModal);

@@ -27,7 +27,8 @@ class NewFunctionalScorePage extends Component {
       selectedPatient: {},
       selectedReportCategory: {},
       columnDefs: this.createColumnDefs(),
-      rowData: ""
+      rowData: "",
+      selectedModal: undefined
     };
   }
 
@@ -183,8 +184,12 @@ class NewFunctionalScorePage extends Component {
     ];
   }
 
-  handleClose() {
-    // this.setState(({  }));
+  handleCloseModal = () => {
+    this.setState(() => ({ selectedModal: false }))
+  }
+
+  handleOpenModal = () => {
+    this.setState(() => ({ selectedModal: true }))
   }
 
   render() {
@@ -197,8 +202,9 @@ class NewFunctionalScorePage extends Component {
       <div>
         <b>Select Patient</b>
         <ImpairmentModal
-          isSelectedd={true}
-          handleClose={this.handleClose}
+          selectedModal={this.state.selectedModal}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
         />
         <Select
           className="m-2"
@@ -218,6 +224,8 @@ class NewFunctionalScorePage extends Component {
         />
 
         <Navigation1 />
+
+        <button onClick={this.handleOpenModal}>Test</button>
 
         <div style={containerStyle} className="ag-fresh">
           <h1>Impairment of Body Functions</h1>
@@ -242,6 +250,6 @@ const authCondition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(authCondition),
-  inject("userStore"),
+  inject("sessionStore"),
   observer
 )(NewFunctionalScorePage);
