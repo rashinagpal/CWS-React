@@ -50,7 +50,14 @@ class EnvironmentPage extends Component {
         rootRef.on("child_added", snapshot => {
             // Store all the labels in array
             data.push(snapshot.val());
-            console.log(data);
+            // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+            data.sort((a, b) => {
+                if (a.id === b.id) {
+                    // Sort by date when they are part of the same subdomain
+                    return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+                }
+                return a.id > b.id ? 1 : -1;
+            });
 
         });
         this.setState({
