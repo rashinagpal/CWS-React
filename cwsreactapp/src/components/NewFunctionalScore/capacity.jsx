@@ -2,14 +2,24 @@ import React, { Component } from "react";
 import * as firebase from "firebase";
 import Select from "react-select";
 import Dropdown from "react-dropdown";
+import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
+import moment from "moment";
+import DatePicker from "react-datepicker";
+import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
+
+import withAuthorization from "../Session/withAuthorization";
+import { inject, observer } from "mobx-react";
+import { compose } from "recompose";
+
+
 class Capacity extends Component {
   constructor() {
     super();
     this.state = {
-      name: "ScoreBoard-Capacity and Performance",
+      name: "Capacity and Performance",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
@@ -18,8 +28,9 @@ class Capacity extends Component {
       scores_p: [],
       selectedScore_c: {},
       selectedScore_p: {},
+      date: moment(),
       c: "",
-      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
+      patientVal: "0" // TODO: Update to dynamic patientVal
     };
   }
 
@@ -48,7 +59,8 @@ class Capacity extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value
+        value: snapshot.val().value,
+        id: snapshot.val().id
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -95,25 +107,47 @@ class Capacity extends Component {
     this.setState({ c: e.target.value });
   };
 
+  handleDateChange = date => {
+    this.setState({ date });
+  };
+
   handleSubmit = e => {
-    console.log("submitted");
     var postRef = firebase
       .database()
       .ref()
+      .child("patient")
       .child(this.state.patientVal)
+      .child("reports")
       .child(this.state.name);
     const object = {
-      careProvider: "testProvider",
-      ModerateImpairmentC: this.state.selectedScore_c.value,
-      ModerateImpairmentP: this.state.selectedScore_p.value,
+      careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       capacitycomment: this.state.c,
-      assessmentDate: Date()
+      assessmentDate: this.state.date.format("DD-MMM-YY"),
+      id: this.state.selectedOption2.id,
+
+      ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
+      ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
+      ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
+      ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
+      ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
+
+      ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
+      ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
+      ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
+      ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
+      ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
     };
-    console.log(object);
+    alert("Report submitted successfully");
     postRef.push(object);
   };
+
+  getCurrentUser() {
+    let user = this.props.sessionStore.authUser.email;
+    user = user.split('@')[0];
+    return user;
+  }
 
   render() {
     const filteredOptions = this.state.options2.filter(
@@ -123,6 +157,8 @@ class Capacity extends Component {
     return (
       <div>
         <Navigation1 />
+        <Header name="Capacity and Performance" />
+
         <p className="m-2">
           <b>Select Domain</b>
         </p>
@@ -169,6 +205,16 @@ class Capacity extends Component {
         />
 
         <p className="m-2">
+          <b>Select Assessment Date</b>
+        </p>
+        <DatePicker
+          className="m-2"
+          name="form-field-name"
+          selected={this.state.date}
+          onChange={this.handleDateChange}
+        />
+
+        <p className="m-2">
           <b>Comment</b>
         </p>
         <FormControl
@@ -189,4 +235,10 @@ class Capacity extends Component {
   }
 }
 
-export default Capacity;
+const authCondition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(authCondition),
+  inject("sessionStore"),
+  observer
+)(Capacity);

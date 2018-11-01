@@ -3,22 +3,32 @@ import React, { Component } from "react";
 import * as firebase from "firebase";
 import Select from "react-select";
 import Dropdown from "react-dropdown";
+import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
+import moment from "moment";
+import DatePicker from "react-datepicker";
+import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
+
+import withAuthorization from "../Session/withAuthorization";
+import { inject, observer } from "mobx-react";
+import { compose } from "recompose";
+
 class Environment extends Component {
   constructor() {
     super();
     this.state = {
-      name: "ScoreBoard-Environment",
+      name: "Environment",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
       options2: [],
       scores: [],
       selectedScore: {},
+      date: moment(),
       c: "",
-      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
+      patientVal: "0" // TODO: Update to dynamic patientVal
     };
   }
 
@@ -48,7 +58,8 @@ class Environment extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value
+        value: snapshot.val().value,
+        id: snapshot.val().id
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -57,7 +68,7 @@ class Environment extends Component {
     rootRef3.on("child_added", snapshot => {
       let scores = {
         label: snapshot.val().label,
-        value: snapshot.val().value
+        value: snapshot.val().value,
       };
       this.setState(prevState => ({
         scores: [...prevState.scores, scores]
@@ -81,24 +92,46 @@ class Environment extends Component {
     this.setState({ c: e.target.value });
   };
 
+  handleDateChange = date => {
+    this.setState({ date });
+  };
+
   handleSubmit = e => {
-    console.log("submitted");
     var postRef = firebase
       .database()
       .ref()
+      .child("patient")
       .child(this.state.patientVal)
+      .child("reports")
       .child(this.state.name);
     const object = {
-      careProvider: "testProvider",
-      Moderatebarrier: this.state.selectedScore.value,
+      careProvider: this.getCurrentUser(),
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: Date()
+      assessmentDate: this.state.date.format("DD-MMM-YY"),
+      id: this.state.selectedOption2.id,
+
+      ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
+      ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
+      ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
+      ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
+
+      ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
+      ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
+      ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
+      ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
+      ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
     };
-    console.log(object);
+    alert("Report submitted successfully");
     postRef.push(object);
   };
+
+  getCurrentUser() {
+    let user = this.props.sessionStore.authUser.email;
+    user = user.split('@')[0];
+    return user;
+  }
 
   render() {
     const filteredOptions = this.state.options2.filter(
@@ -108,6 +141,8 @@ class Environment extends Component {
     return (
       <div>
         <Navigation1 />
+        <Header name="Environment" />
+
         <p className="m-2">
           <b>Select Domain</b>
         </p>
@@ -141,6 +176,17 @@ class Environment extends Component {
           onChange={this.handleChange3}
           value={this.state.selectedScore}
         />
+
+        <p className="m-2">
+          <b>Select Assessment Date</b>
+        </p>
+        <DatePicker
+          className="m-2"
+          name="form-field-name"
+          selected={this.state.date}
+          onChange={this.handleDateChange}
+        />
+
         <p className="m-2">
           <b>Comment</b>
         </p>
@@ -163,4 +209,10 @@ class Environment extends Component {
   }
 }
 
-export default Environment;
+const authCondition = authUser => !!authUser;
+
+export default compose(
+  withAuthorization(authCondition),
+  inject("sessionStore"),
+  observer
+)(Environment);

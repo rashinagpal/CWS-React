@@ -1,37 +1,49 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import * as routes from "../../constants/routes";
-import { Button } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-
-import * as firebase from "firebase";
-import Dropdown from "react-dropdown";
-
-import { auth } from "../../firebase";
-import Select from "react-select";
 
 import { inject, observer } from "mobx-react";
 import { compose } from "recompose";
+import Select from "react-select";
 
 import withAuthorization from "../Session/withAuthorization";
+import { AgGridReact } from "ag-grid-react";
+import * as firebase from "firebase";
+import "firebase/database";
+
+import Navigation1 from "../NewFunctionalScore/Navigation1";
+import ImpairmentModal from '../Modal/ImpairmentModal';
+
+const reportCategories = [
+  { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions'},
+  { value: 'Capacity and Performance', label: 'Capacity and Performance' },
+  { value: 'Environment', label: 'Environment' },
+];
 
 class NewFunctionalScorePage extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
     this.state = {
       patients: [],
-      selectedOptionPatient: {},
-      PatientName: ""
+      selectedPatient: {},
+      selectedReportCategory: {},
+      columnDefs: this.createColumnDefs(),
+      rowData: "",
+      selectedModal: undefined
     };
   }
 
-  componentWillMount() {
-    this.getData(66);
+  onGridReady(params) {
+    this.gridApi = params.api;
+    this.columnApi = params.columnApi;
+
+    this.gridApi.sizeColumnsToFit();
   }
 
-  //firebase fetch
-  getData(index) {
+  componentWillMount() {
+    this.getPatients();
+  }
+
+  getPatients() {
     var rootRef = firebase
       .database()
       .ref()
@@ -39,6 +51,7 @@ class NewFunctionalScorePage extends Component {
 
     rootRef.on("child_added", snapshot => {
       let element = {
+        value: snapshot.val().label.split(' - ')[0],
         label: snapshot.val().label
       };
       this.setState(prevState => ({
@@ -47,65 +60,184 @@ class NewFunctionalScorePage extends Component {
     });
   }
 
-  handleChanger1 = selectedOptionPatient => {
-    this.setState({ selectedOptionPatient });
+  getReports() {
+    // Check if both a patient and category have been selected before querying the DB
+    if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
+      var rootRef = firebase
+        .database()
+        .ref()
+        .child("patient")
+        .child(this.state.selectedPatient.value)
+        .child("reports")
+        .child(this.state.selectedReportCategory.value);
+
+      let data = [];
+
+      rootRef.on("child_added", snapshot => {
+        // Store all the labels in array
+        data.push(snapshot.val());
+
+      });
+      this.setState({
+        rowData: data
+      });
+    }
+  }
+
+  handleChangePatient = selectedPatient => {
+    this.setState({ selectedPatient }, () => this.getReports());
   };
 
+  handleChangeCategory = selectedReportCategory => {
+    this.setState({ selectedReportCategory }, () => this.getReports());
+  }
+
+  // TODO: Dynamic grid changing when a different category is selected
+
+  createColumnDefs() {
+    return [
+      {
+        headerName: "Domain",
+        field: "domain",
+        cellClassRules: {
+          "rag-grey": "rowIndex % 2 === 1"
+        }
+      },
+      {
+        headerName: "Subdomain",
+        field: "subDomain",
+        cellClassRules: {
+          "rag-grey": "rowIndex % 2 === 1"
+        }
+      },
+      {
+        headerName: "Care Provider",
+        field: "careProvider",
+        width: 100,
+        cellClassRules: {
+          "rag-grey": "rowIndex % 2 === 1"
+        }
+      },
+      {
+        headerName: "Assessment Date",
+        field: "assessmentDate",
+        width: 100,
+        cellClassRules: {
+          "rag-grey": "rowIndex % 2 === 1"
+        }
+      },
+      {
+        headerName: "0",
+        field: "NoImpairment",
+        width: 30,
+        cellClassRules: {
+          "rag-green": "x === 0",
+          "rag-grey": "rowIndex % 2 === 1 && x !== 0"
+        }
+      },
+      {
+        headerName: "1",
+        field: "MildImpairment",
+        width: 30,
+        cellClassRules: {
+          "rag-lime": "x === 1",
+          "rag-grey": "rowIndex % 2 === 1 && x !== 1"
+        }
+      },
+      {
+        headerName: "2",
+        field: "ModerateImpairment",
+        width: 30,
+        cellClassRules: {
+          "rag-yellow": "x === 2",
+          "rag-grey": "rowIndex % 2 === 1 && x !== 2"
+        }
+      },
+      {
+        headerName: "3",
+        field: "SevereImpairment",
+        width: 30,
+        cellClassRules: {
+          "rag-orange": "x === 3",
+          "rag-grey": "rowIndex % 2 === 1 && x !== 3"
+        }
+      },
+      {
+        headerName: "4",
+        field: "CompleteImpairment",
+        width: 30,
+        cellClassRules: {
+          "rag-red": "x === 4",
+          "rag-grey": "rowIndex % 2 === 1 && x !== 4",
+          width: 100
+        }
+      },
+      {
+        headerName: "Comment",
+        field: "comment",
+        cellClassRules: {
+          "rag-grey": "rowIndex % 2 === 1"
+        }
+      }
+    ];
+  }
+
+  handleCloseModal = () => {
+    this.setState(() => ({ selectedModal: false }))
+  }
+
+  handleOpenModal = () => {
+    this.setState(() => ({ selectedModal: true }))
+  }
+
   render() {
+    let containerStyle = {
+      height: 500,
+      width: 1250
+    };
+
     return (
       <div>
-        <div>
-          <b>Select Patient</b>
-          <Select
-            className="m-2"
-            options={this.state.patients}
-            value={this.state.selectedOptionPatient.querySelector}
-            onChange={this.handleChanger1}
-            PatientName={this.state.selectedOptionPatient.label}
-          />
-        </div>
-        <div>
-          <p className="m-2" />
-          <b>
-            Select the Category of Report{" "}
-            {this.state.selectedOptionPatient.label}
-          </b>
-          <li>
-            <Link to={routes.IMPAIRMENT_OF_BODY_FUNCTIONS}>
-              Impairment of Body Functions
-            </Link>
-          </li>
-          <li>
-            <Link to={routes.CAPACITY_AND_PERFORMANCE}>
-              Capacity and Performance
-            </Link>
-          </li>
-          <li>
-            <Link to={routes.ENVIRONMENT}>Environment</Link>
-          </li>
-        </div>
+        <b>Select Patient</b>
+        <ImpairmentModal
+          selectedModal={this.state.selectedModal}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+        />
+        <Select
+          className="m-2"
+          options={this.state.patients}
+          value={this.state.selectedPatient.querySelector}
+          onChange={this.handleChangePatient}
+        />
 
-        <div>
-          <p className="m-2" />
-          <b>Add new Functional score</b>{" "}
-          <NavLink to="/impairment">
-            <Button bsStyle="primary" className="m-3">
-              {" "}
-              Impairment of Body Functions
-            </Button>
-          </NavLink>
-          <NavLink to="/env">
-            <Button bsStyle="primary" className="m-3">
-              {" "}
-              Environment
-            </Button>
-          </NavLink>
-          <NavLink to="/capacity">
-            <Button bsStyle="primary" className="m-3">
-              {" "}
-              Capacity and Performance
-            </Button>
-          </NavLink>
+        <br />
+
+        <b>Select the Category of Report</b>
+        <Select
+          className="m-2"
+          options={reportCategories}
+          value={this.state.selectedReportCategory.querySelector}
+          onChange={this.handleChangeCategory}
+        />
+
+        <Navigation1 />
+
+        <button onClick={this.handleOpenModal}>Test</button>
+
+        <div style={containerStyle} className="ag-fresh">
+          <h1>Impairment of Body Functions</h1>
+          <AgGridReact
+            // properties
+            columnDefs={this.state.columnDefs}
+            rowData={this.state.rowData}
+            enableSorting
+            enableFilter
+            floatingFilter
+            rowSelection="multiple"
+            // events
+            onGridReady={this.onGridReady}
+          />
         </div>
       </div>
     );
@@ -116,6 +248,6 @@ const authCondition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(authCondition),
-  inject("userStore"),
+  inject("sessionStore"),
   observer
 )(NewFunctionalScorePage);

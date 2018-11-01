@@ -6,7 +6,6 @@ import * as routes from '../../constants/routes';
 
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
-import {AgGridReact} from "ag-grid-react";
 
 class HomePage extends Component {
   componentDidMount() {
@@ -22,8 +21,8 @@ class HomePage extends Component {
 
     return (
       <div>
-        <h1>This is CWS-React Application</h1>
-		<Link to={routes.NEW_FUNCTIONAL_SCORE}>CWS-React</Link>
+        <h1>ABI Application</h1>
+		<Link to={routes.NEW_FUNCTIONAL_SCORE}>ABI Demo</Link>
 
        { !!users && <UserList users={users} /> }
       </div>
