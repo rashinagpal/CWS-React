@@ -3,13 +3,12 @@ import React, { Component } from "react";
 import * as firebase from "firebase";
 import Select from "react-select";
 import Dropdown from "react-dropdown";
-import Header from "../NewFunctionalScore/Header";
+import Header from "./Header";
 import { FormControl } from "react-bootstrap";
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
 import moment, { now } from "moment";
 import DatePicker from "react-datepicker";
-import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 
 import withAuthorization from "../Session/withAuthorization";
 import { inject, observer } from "mobx-react";
@@ -19,16 +18,15 @@ class Impairment extends Component {
   constructor() {
     super();
     this.state = {
-      name: "Impairment of Body Functions",
+      name: "ScoreBoard-Impairment of Body Functions",
       selectedOption: {},
       selectedOption2: {},
       options1: [],
       options2: [],
       scores: [],
       selectedScore: {},
-      date: moment(),
       c: "",
-      patientVal: "0" // TODO: Update to dynamic patientVal
+      patientVal: "23 - Austin Chamney - 000001 - 02 Jan 1991"
     };
   }
 
@@ -39,9 +37,13 @@ class Impairment extends Component {
   //firebase fetch
   getnewData(index) {
     var Ref = firebase.database().ref();
-    var rootRef = Ref.child("impairment_of_body_functions").child("domain");
-    var rootRef2 = Ref.child("impairment_of_body_functions").child("subDomain");
-    var rootRef3 = Ref.child("Functional_Scores").child("impairment_of_body_functions");
+    var rootRef = Ref.child("impairement_of_body_functions").child("domain");
+    var rootRef2 = Ref.child("impairement_of_body_functions").child(
+      "subDomain"
+    );
+    var rootRef3 = Ref.child("Functional_Scores").child(
+      "impairement_of_body_functions"
+    );
 
     rootRef.on("child_added", snapshot => {
       let element = {
@@ -57,8 +59,7 @@ class Impairment extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value,
-        id: snapshot.val().id
+        value: snapshot.val().value
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -88,16 +89,11 @@ class Impairment extends Component {
   };
 
   handleChange3 = selectedScore => {
-    this.getCurrentUser();
     this.setState({ selectedScore });
   };
 
   handleChange4 = e => {
     this.setState({ c: e.target.value });
-  };
-
-  handleDateChange = date => {
-    this.setState({ date });
   };
 
   handleSubmit = id => {
@@ -106,35 +102,25 @@ class Impairment extends Component {
     var postRef = firebase
       .database()
       .ref()
-      .child("patient")
       .child(this.state.patientVal)
-      .child("reports")
       .child(this.state.name);
 
-      
     const object = {
-      careProvider: this.getCurrentUser(),
+      careProvider: "testProvider",
+      ModerateImpairment: this.state.selectedScore.value,
       domain: this.state.selectedOption.label,
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
-      assessmentDate: this.state.date.format("DD-MMM-YY"),
-      id: this.state.selectedOption2.id,
-
-      ...(this.state.selectedScore.value == 0) && { NoImpairment: 0 },
-      ...(this.state.selectedScore.value == 1) && { MildImpairment: 1 },
-      ...(this.state.selectedScore.value == 2) && { ModerateImpairment: 2 },
-      ...(this.state.selectedScore.value == 3) && { SevereImpairment: 3 },
-      ...(this.state.selectedScore.value == 4) && { CompleteImpairment: 4 }
+      assessmentDate: Date()
     };
-    alert("Report submitted successfully");
+    console.log(object);
+    alert("submitted");
     postRef.push(object);
   };
 
-  getCurrentUser() {
-    let user = this.props.sessionStore.authUser.email;
-    user = user.split('@')[0];
-    return user;
-  }
+  handleHeader = () => {
+    console.log("event handler called");
+  };
 
   render() {
     const filteredOptions = this.state.options2.filter(
@@ -144,7 +130,7 @@ class Impairment extends Component {
     return (
       <div>
         <Navigation1 />
-        <Header name="Impairment of Body Functions" />
+        <Header />
 
         <p className="m-2">
           <b>Select Domain</b>
@@ -178,17 +164,6 @@ class Impairment extends Component {
           onChange={this.handleChange3}
           value={this.state.selectedScore.querySelector}
         />
-
-        <p className="m-2">
-          <b>Select Assessment Date</b>
-        </p>
-        <DatePicker
-          className="m-2"
-          name="form-field-name"
-          selected={this.state.date} 
-          onChange={this.handleDateChange}
-        />
-
         <p className="m-2">
           <b>Comment</b>
         </p>

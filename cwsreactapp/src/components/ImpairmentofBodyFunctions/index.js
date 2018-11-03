@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import * as routes from "../../constants/routes";
 
 import { inject, observer } from "mobx-react";
 import { compose } from "recompose";
-import Select from "react-select";
 
 import withAuthorization from "../Session/withAuthorization";
+import { db } from "../../firebase";
 import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
@@ -16,9 +19,6 @@ class ImpairmentofBodyFunctionsPage extends Component {
     super(props);
 
     this.state = {
-      patients: [],
-      selectedPatient: {},
-      patientName: "",
       columnDefs: this.createColumnDefs(),
       rowData: ""
     };
@@ -32,58 +32,28 @@ class ImpairmentofBodyFunctionsPage extends Component {
   }
 
   componentWillMount() {
-    this.getPatients();
+    this.getData(66);
   }
 
-  getPatients() {
+  //firebase fetch
+  getData(index) {
     var rootRef = firebase
       .database()
       .ref()
-      .child("patient");
+      .child("23 - Austin Chamney - 000001 - 02 Jan 1991")
+      .child("ScoreBoard-Impairment of Body Functions");
 
-    rootRef.on("child_added", snapshot => {
-      let element = {
-        value: snapshot.val().label.split(' - ')[0],
-        label: snapshot.val().label
-      };
-      this.setState(prevState => ({
-        patients: [...prevState.patients, element]
-      }));
-    });
-  }
-
-  getReports(patientId) {
-    var rootRef = firebase
-      .database()
-      .ref()
-      .child("patient")
-      .child(patientId)
-      .child("reports")
-      .child("Impairment of Body Functions");
-
-    let data = [];
+    var Data = [];
 
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
-      data.push(snapshot.val());
-      // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-      data.sort((a, b) => {
-        if (a.id === b.id) {
-          // Sort by date when they are part of the same subdomain
-          return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-        }
-        return a.id > b.id ? 1 : -1;
-      });
+      Data.push(snapshot.val());
     });
+
     this.setState({
-      rowData: data
+      rowData: Data
     });
   }
-
-  handleChangePatient = selectedPatient => {
-    this.getReports(selectedPatient.value);
-    this.setState({ selectedPatient });
-  };
 
   createColumnDefs() {
     return [
@@ -95,14 +65,14 @@ class ImpairmentofBodyFunctionsPage extends Component {
         }
       },
       {
-        headerName: "Subdomain",
+        headerName: "Sub Domain",
         field: "subDomain",
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
       },
       {
-        headerName: "Care Provider",
+        headerName: "CareProvider",
         field: "careProvider",
         width: 100,
         cellClassRules: {
@@ -110,7 +80,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
         }
       },
       {
-        headerName: "Assessment Date",
+        headerName: "AssessmentDate",
         field: "assessmentDate",
         width: 100,
         cellClassRules: {
@@ -181,19 +151,10 @@ class ImpairmentofBodyFunctionsPage extends Component {
 
     return (
       <div>
-        <b>Select Patient</b>
-        <Select
-          className="m-2"
-          options={this.state.patients}
-          value={this.state.selectedPatient.querySelector}
-          onChange={this.handleChangePatient}
-          patientName={this.state.selectedPatient.label}
-        />
-
         <Navigation1 />
 
         <div style={containerStyle} className="ag-fresh">
-          <h1>Impairment of Body Functions</h1>
+          <h1>Impairment of Body Function </h1>
           <AgGridReact
             // properties
             columnDefs={this.state.columnDefs}

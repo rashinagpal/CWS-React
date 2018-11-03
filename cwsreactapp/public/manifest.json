@@ -1,6 +1,6 @@
 {
-  "short_name": "ABI App",
-  "name": "Acquired Brain Injury Application",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
