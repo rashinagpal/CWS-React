@@ -9,9 +9,10 @@ import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
 
-import ImpairmentModal from '../Modal/ImpairmentModal';
+import NewScoreModal from '../Modal/NewScoreModal';
 import '../../constants/column-defs';
 import columnDefs from "../../constants/column-defs";
+import Navigation1 from "./Navigation1";
 
 const reportCategories = [
   { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions' },
@@ -135,11 +136,14 @@ class NewFunctionalScorePage extends Component {
     return (
       <div>
         <b>Select Patient</b>
-        <ImpairmentModal
+        <NewScoreModal
           selectedModal={this.state.selectedModal}
           handleCloseModal={this.handleCloseModal}
           sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
         />
+        <Navigation1 />
         <Select
           className="m-2"
           options={this.state.patients}
@@ -159,7 +163,12 @@ class NewFunctionalScorePage extends Component {
 
         <br />
 
-        <button onClick={this.handleOpenModal}>Add New Functional Score</button>
+        <button 
+          onClick={this.handleOpenModal}
+          disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >
+          Add New Functional Score
+        </button>
 
         <div style={containerStyle} className="ag-fresh">
           <h1>{this.state.selectedReportCategory.value}</h1>
