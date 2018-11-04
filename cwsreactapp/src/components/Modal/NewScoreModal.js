@@ -9,6 +9,9 @@ import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 
+// This component is incomplete. Having trouble getting it to fetch the dropdown items again when category is changed.
+// May need to fix later on to allow for better scalability
+
 export default class NewScoreModal extends Component {
     constructor() {
         super();
@@ -25,15 +28,55 @@ export default class NewScoreModal extends Component {
     }
 
     componentWillMount() {
-        this.getnewData(66);
+        this.getDropdownData();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.scoreCategory !== this.props.scoreCategory) {
+            this.getDropdownData();
+        }
     }
 
     //firebase fetch
-    getnewData(index) {
-        var Ref = firebase.database().ref();
-        var rootRef = Ref.child("impairment_of_body_functions").child("domain");
-        var rootRef2 = Ref.child("impairment_of_body_functions").child("subDomain");
-        var rootRef3 = Ref.child("Functional_Scores").child("impairment_of_body_functions");
+    getDropdownData() {
+        var ref = firebase.database().ref();
+        let rootRef;
+        let rootRef2;
+        let rootRef3;
+        let rootRef4;
+        console.log(`Modal changed with ${this.props.scoreCategory}`);
+
+        // Get the rootRefs based on the current selected category
+        if (this.props.scoreCategory === 'Impairment of Body Functions') {
+
+            rootRef = ref.child("impairment_of_body_functions").child("domain");
+            rootRef2 = ref.child("impairment_of_body_functions").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("impairment_of_body_functions");
+
+        } else if (this.props.scoreCategory === 'Capacity and Performance') {
+
+            rootRef = ref.child("capacity_and_performance").child("domain");
+            rootRef2 = ref.child("capacity_and_performance").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("capacity");
+            rootRef4 = ref.child("Functional_Scores").child("performance");
+
+            rootRef4.on("child_added", snapshot => {
+                let scores_p = {
+                    label: snapshot.val().label,
+                    value: snapshot.val().value
+                };
+                this.setState(prevState => ({
+                    scores_p: [...prevState.scores_p, scores_p]
+                }));
+            });
+
+        } else if (this.props.scoreCategory === 'Environment') {
+            console.log('Score category env');
+            rootRef = ref.child("environment").child("domain");
+            rootRef2 = ref.child("environment").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("environment");
+
+        }
 
         rootRef.on("child_added", snapshot => {
             let element = {
@@ -115,9 +158,14 @@ export default class NewScoreModal extends Component {
             ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
             ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
         };
-        console.log(`Selected Score: ${this.state.selectedScore.value}`);
-        postRef.push(object);
+
+        // TODO: Refreshing is not working, need to fix later
         this.props.handleCloseModal();
+        postRef.push(object).then(() => {
+            this.props.handleRefresh();
+        }).catch((error) => {
+            console.log(error);
+        });
     };
 
     getCurrentUser() {
@@ -125,8 +173,6 @@ export default class NewScoreModal extends Component {
         user = user.split('@')[0];
         return user;
     }
-
-    // TODO: Pass in isSelected boolean in parent, create handleClose method in parent
 
     render() {
         const filteredOptions = this.state.options2.filter(

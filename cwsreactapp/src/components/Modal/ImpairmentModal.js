@@ -4,7 +4,7 @@ import Select from "react-select";
 import Header from "../NewFunctionalScore/Header";
 import { FormControl } from "react-bootstrap";
 import "../.././styles.css";
-import moment, { now } from "moment";
+import moment from "moment";
 import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
@@ -13,7 +13,6 @@ export default class ImpairmentModal extends Component {
     constructor() {
         super();
         this.state = {
-            name: "Impairment of Body Functions",
             selectedOption: {},
             selectedOption2: {},
             options1: [],
@@ -22,20 +21,19 @@ export default class ImpairmentModal extends Component {
             selectedScore: {},
             date: moment(),
             c: "",
-            patientVal: "0" // TODO: Update to dynamic patientVal
         };
     }
 
     componentWillMount() {
-        this.getnewData(66);
+        this.getDropdownData();
     }
 
     //firebase fetch
-    getnewData(index) {
-        var Ref = firebase.database().ref();
-        var rootRef = Ref.child("impairment_of_body_functions").child("domain");
-        var rootRef2 = Ref.child("impairment_of_body_functions").child("subDomain");
-        var rootRef3 = Ref.child("Functional_Scores").child("impairment_of_body_functions");
+    getDropdownData() {
+        var ref = firebase.database().ref();
+        let rootRef = ref.child("impairment_of_body_functions").child("domain");
+        let rootRef2 = ref.child("impairment_of_body_functions").child("subDomain");
+        let rootRef3 = ref.child("Functional_Scores").child("impairment_of_body_functions");
 
         rootRef.on("child_added", snapshot => {
             let element = {
@@ -51,7 +49,8 @@ export default class ImpairmentModal extends Component {
             let element2 = {
                 label: snapshot.val().label,
                 link: snapshot.val().link,
-                value: snapshot.val().value
+                value: snapshot.val().value,
+                id: snapshot.val().id
             };
             this.setState(prevState => ({
                 options2: [...prevState.options2, element2]
@@ -81,7 +80,6 @@ export default class ImpairmentModal extends Component {
     };
 
     handleChange3 = selectedScore => {
-        this.getCurrentUser();
         this.setState({ selectedScore });
     };
 
@@ -94,15 +92,14 @@ export default class ImpairmentModal extends Component {
     };
 
     handleSubmit = id => {
-        console.log(id);
 
         var postRef = firebase
             .database()
             .ref()
             .child("patient")
-            .child(this.state.patientVal)
+            .child(this.props.patient)
             .child("reports")
-            .child(this.state.name);
+            .child(this.props.scoreCategory);
 
         const object = {
             careProvider: this.getCurrentUser(),
@@ -110,16 +107,22 @@ export default class ImpairmentModal extends Component {
             subDomain: this.state.selectedOption2.label,
             comment: this.state.c,
             assessmentDate: this.state.date.format("DD-MMM-YY"),
+            id: this.state.selectedOption2.id,
 
-            ...(this.state.selectedScore.value === '0') && { NoImpairment: 0 },
-            ...(this.state.selectedScore.value === '1') && { MildImpairment: 1 },
-            ...(this.state.selectedScore.value === '2') && { ModerateImpairment: 2 },
-            ...(this.state.selectedScore.value === '3') && { SevereImpairment: 3 },
-            ...(this.state.selectedScore.value === '4') && { CompleteImpairment: 4 }
+            ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
+            ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
+            ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
+            ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
+            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
         };
-        alert("Report submitted successfully");
-        postRef.push(object);
+
+        // TODO: Refreshing is not working, need to fix later
         this.props.handleCloseModal();
+        postRef.push(object).then(() => {
+            this.props.handleRefresh();
+        }).catch((error) => {
+            console.log(error);
+        });
     };
 
     getCurrentUser() {
@@ -127,8 +130,6 @@ export default class ImpairmentModal extends Component {
         user = user.split('@')[0];
         return user;
     }
-
-    // TODO: Pass in isSelected boolean in parent, create handleClose method in parent
 
     render() {
         const filteredOptions = this.state.options2.filter(
@@ -138,13 +139,14 @@ export default class ImpairmentModal extends Component {
         return (
             <div>
                 <Modal
+                    ariaHideApp={false}
                     isOpen={!!this.props.selectedModal}
                     onRequestClose={this.props.handleCloseModal}
-                    contentLabel="Test"
+                    contentLabel="ScoreModal"
                     closeTimeoutMS={200}
                     className="modal"
                 >
-                    <Header name="New Impairment of Body Functions Functional Score" />
+                    <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
                     <p className="m-2">
                         <b>Select Domain</b>
@@ -208,6 +210,13 @@ export default class ImpairmentModal extends Component {
                         onClick={this.handleSubmit}
                     >
                         Submit
+                    </button>
+
+                    <button
+                        className="modal__button"
+                        onClick={this.props.handleCloseModal}
+                    >
+                        Cancel
                     </button>
                 </Modal>
             </div>

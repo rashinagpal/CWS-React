@@ -9,7 +9,9 @@ import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
 
-import NewScoreModal from '../Modal/NewScoreModal';
+import ImpairmentModal from '../Modal/ImpairmentModal';
+import CapacityAndPerformanceModal from '../Modal/CapacityAndPerformanceModal';
+import EnvironmentModal from '../Modal/EnvironmentModal';
 import '../../constants/column-defs';
 import columnDefs from "../../constants/column-defs";
 import Navigation1 from "./Navigation1";
@@ -27,10 +29,11 @@ class NewFunctionalScorePage extends Component {
     this.state = {
       patients: [],
       selectedPatient: {},
-      selectedReportCategory: {},
+      selectedReportCategory: reportCategories[0],
       columnDefs: columnDefs.getImpairmentColumns(),
       rowData: "",
-      selectedModal: undefined
+      selectedModal: undefined,
+      modalOpen: false
     };
   }
 
@@ -62,7 +65,8 @@ class NewFunctionalScorePage extends Component {
     });
   }
 
-  getReports() {
+  getReports = () => {
+    console.log(`getReports called for Patient: ${this.state.selectedPatient.value} and Category: ${this.state.selectedReportCategory.value}`);
     // Check if both a patient and category have been selected before querying the DB
     if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
       var rootRef = firebase
@@ -87,12 +91,12 @@ class NewFunctionalScorePage extends Component {
           return a.id > b.id ? 1 : -1;
         });
       });
-      console.log(data);
       this.setState({
         rowData: data
       });
     }
   }
+
 
   handleChangePatient = selectedPatient => {
     this.setState({ selectedPatient }, () => this.getReports());
@@ -121,11 +125,11 @@ class NewFunctionalScorePage extends Component {
   }
 
   handleCloseModal = () => {
-    this.setState(() => ({ selectedModal: false }))
+    this.setState(() => ({ modalOpen: false }))
   }
 
   handleOpenModal = () => {
-    this.setState(() => ({ selectedModal: true }))
+    this.setState(() => ({ modalOpen: true }))
   }
 
   render() {
@@ -137,12 +141,32 @@ class NewFunctionalScorePage extends Component {
     return (
       <div>
         <b>Select Patient</b>
-        <NewScoreModal
-          selectedModal={this.state.selectedModal}
+        <ImpairmentModal
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[0].value }
           handleCloseModal={this.handleCloseModal}
           sessionStore={this.props.sessionStore}
           patient={this.state.selectedPatient.value}
           scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData}
+        />
+        <CapacityAndPerformanceModal
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[1].value}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData}
+        />
+        <EnvironmentModal
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[2].value}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData} 
         />
         <Navigation1 />
         <Select
