@@ -168,7 +168,7 @@ class NewFunctionalScorePage extends Component {
           handleRefresh={this.getReports}
           rowData={this.state.rowData} 
         />
-        <Navigation1 />
+        
         <Select
           className="m-2"
           options={this.state.patients}
