@@ -87,6 +87,7 @@ class NewFunctionalScorePage extends Component {
           return a.id > b.id ? 1 : -1;
         });
       });
+      console.log(data);
       this.setState({
         rowData: data
       });

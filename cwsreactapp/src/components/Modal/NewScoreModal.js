@@ -4,7 +4,7 @@ import Select from "react-select";
 import Header from "../NewFunctionalScore/Header";
 import { FormControl } from "react-bootstrap";
 import "../.././styles.css";
-import moment, { now } from "moment";
+import moment from "moment";
 import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
@@ -13,7 +13,6 @@ export default class NewScoreModal extends Component {
     constructor() {
         super();
         this.state = {
-            name: "Impairment of Body Functions",
             selectedOption: {},
             selectedOption2: {},
             options1: [],
@@ -22,7 +21,6 @@ export default class NewScoreModal extends Component {
             selectedScore: {},
             date: moment(),
             c: "",
-            patientVal: "0" // TODO: Update to dynamic patientVal
         };
     }
 
@@ -82,7 +80,6 @@ export default class NewScoreModal extends Component {
     };
 
     handleChange3 = selectedScore => {
-        this.getCurrentUser();
         this.setState({ selectedScore });
     };
 
@@ -95,15 +92,14 @@ export default class NewScoreModal extends Component {
     };
 
     handleSubmit = id => {
-        console.log(id);
 
         var postRef = firebase
             .database()
             .ref()
             .child("patient")
-            .child(this.state.patientVal)
+            .child(this.props.patient)
             .child("reports")
-            .child(this.state.name);
+            .child(this.props.scoreCategory);
 
         const object = {
             careProvider: this.getCurrentUser(),
@@ -113,13 +109,13 @@ export default class NewScoreModal extends Component {
             assessmentDate: this.state.date.format("DD-MMM-YY"),
             id: this.state.selectedOption2.id,
 
-            ...(this.state.selectedScore.value === '0') && { NoImpairment: 0 },
-            ...(this.state.selectedScore.value === '1') && { MildImpairment: 1 },
-            ...(this.state.selectedScore.value === '2') && { ModerateImpairment: 2 },
-            ...(this.state.selectedScore.value === '3') && { SevereImpairment: 3 },
-            ...(this.state.selectedScore.value === '4') && { CompleteImpairment: 4 }
+            ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
+            ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
+            ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
+            ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
+            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
         };
-        alert("Report submitted successfully");
+        console.log(`Selected Score: ${this.state.selectedScore.value}`);
         postRef.push(object);
         this.props.handleCloseModal();
     };
