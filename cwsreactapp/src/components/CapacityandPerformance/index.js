@@ -61,81 +61,183 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
     createColumnDefs() {
         return [
             {headerName: "Domain", field: "domain",
+            filter: "agTextColumnFilter",
+            filterParams: {
+            applyButton: true,
+            clearButton: true
+            },
 			cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }},
             {headerName: "Sub Domain", field: "subDomain" ,
+            filter: "agTextColumnFilter",
+            filterParams: {
+            applyButton: true,
+            clearButton: true
+            },
 			cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }},
             {headerName: "CareProvider", field: "careProvider", width: 100,
-			cellClassRules: {
+            filter: "agTextColumnFilter",
+            filterParams: {
+            applyButton: true,
+            clearButton: true
+            },
+            cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }},
 			{headerName: "AssessmentDate", field: "assessmentDate", width: 100,
-			cellClassRules: {
+            filter: "agDateColumnFilter",
+            filterParams: {
+            comparator: function(filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue;
+            var dateParts = dateAsString.split("/");
+            var cellDate = new Date(Number(dateParts[2]), Number(dateParts[1]) - 1, Number(dateParts[0]));
+            if (filterLocalDateAtMidnight.getTime() == cellDate.getTime()) {
+              return 0;
+            }
+              if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+              }
+              if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+              }
+            },
+            clearButton: true
+            },
+            cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }},
 		  
 			{headerName: "Capacity",
           children: [{headerName: "0", field: "NoImpairmentC", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-green": "x === 0",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 0"
           }},
-		  {headerName: "1", field: "MildImpairmentC", width: 30,
+          {headerName: "1", field: "MildImpairmentC", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-lime": "x === 1",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 1"
           }},
-		  {headerName: "2", field: "ModerateImpairmentC", width: 30,
+          {headerName: "2", field: "ModerateImpairmentC", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-yellow": "x === 2",
+            filter: "agNumberColumnFilter",
+            filterParams: {
+            applyButton: true,
+            clearButton: true
+            },
 			"rag-grey": "rowIndex % 2 === 1 && x !== 2"
           }},
-		  {headerName: "3", field: "SevereImpairmentC", width: 30,
+          {headerName: "3", field: "SevereImpairmentC", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
-			"rag-orange": "x === 3",
+            "rag-orange": "x === 3",
+            filter: "agNumberColumnFilter",
+            filterParams: {
+            applyButton: true,
+            clearButton: true
+            },
 			"rag-grey": "rowIndex % 2 === 1 && x !== 3"
           }},
-		  {headerName: "4", field: "CompleteImpairmentC", width: 30,
+          {headerName: "4", field: "CompleteImpairmentC", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
 			"rag-red": "x === 4",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 4"
           }},
 		  {headerName: "Comment", field: "capacitycomment", width: 120,
-			cellClassRules: {
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },  
+          cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }}]},
 		  
 		  {headerName: "Performance",
           children: [{headerName: "0", field: "NoImpairmentP", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-green": "x === 0",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 0"
           }},
 		  {headerName: "1", field: "MildImpairmentP", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-lime": "x === 1",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 1"
           }},
 		  {headerName: "2", field: "ModerateImpairmentP", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
             "rag-yellow": "x === 2",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 2"
           }},
 		  {headerName: "3", field: "SevereImpairmentP", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
 			"rag-orange": "x === 3",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 3"
           }},
 		  {headerName: "4", field: "CompleteImpairmentP", width: 30,
+          filter: "agNumberColumnFilter",
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },
           cellClassRules: {
 			"rag-red": "x === 4",
 			"rag-grey": "rowIndex % 2 === 1 && x !== 4"
           }},
 		  {headerName: "Comment", field: "performancecomment", width: 120,
-			cellClassRules: {
+          filterParams: {
+          applyButton: true,
+          clearButton: true
+          },  
+          cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }}]}
 		  
