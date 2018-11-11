@@ -8,14 +8,14 @@ import { compose } from 'recompose';
 
 import withAuthorization from '../Session/withAuthorization';
 import { db } from '../../firebase';
-import {AgGridReact} from "ag-grid-react";
+import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import 'firebase/database';
 
 import Navigation1 from "../NewFunctionalScore/Navigation1";
 
-  class CapacityandPerformancePage extends Component {
-  constructor(props) {
+class CapacityandPerformancePage extends Component {
+    constructor(props) {
         super(props);
 
         this.state = {
@@ -30,33 +30,39 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
 
         this.gridApi.sizeColumnsToFit();
     }
-	
-	 componentWillMount() {
-    this.getData(66);
-  }
 
-  //firebase fetch
-  getData(index) {
-    var rootRef = firebase
-      .database()
-      .ref()
-      .child("patient")
-      .child("0")
-      .child("reports")
-      .child("Capacity and Performance");
+    componentWillMount() {
+        this.getData(66);
+    }
 
-      let data = [];
-	
-      rootRef.on("child_added", snapshot => {
-        // Store all the labels in array
-        data.push(snapshot.val());
-       console.log(data);
-       
-       });	    
+    //firebase fetch
+    getData(index) {
+        var rootRef = firebase
+            .database()
+            .ref()
+            .child("patient")
+            .child("0")
+            .child("reports")
+            .child("Capacity and Performance");
+
+        let data = [];
+
+        rootRef.on("child_added", snapshot => {
+            // Store all the labels in array
+            data.push(snapshot.val());
+            // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+            data.sort((a, b) => {
+                if (a.id === b.id) {
+                    // Sort by date when they are part of the same subdomain
+                    return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+                }
+                return a.id > b.id ? 1 : -1;
+            });
+        });
         this.setState({
-        rowData: data
-      });
-  }
+            rowData: data
+        });
+    }
 
     createColumnDefs() {
         return [
@@ -240,13 +246,13 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
           cellClassRules: {
 			"rag-grey": "rowIndex % 2 === 1"
           }}]}
-		  
+		
         ];
     }
-	
-  
- 
-  
+
+
+
+
     render() {
         let containerStyle = {
             height: 500,
@@ -254,27 +260,27 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
         };
 
         return (
-		<div>
-		<Navigation1 />
-		
-            <div style={containerStyle} className="ag-fresh">
-                <h1>Capacity and Performance</h1>
-                <AgGridReact
-                    // properties
-                    columnDefs={this.state.columnDefs}
-					rowData={this.state.rowData}
-					enableSorting
-					enableFilter
-					floatingFilter
-					rowSelection="multiple"
-					
+            <div>
+                <Navigation1 />
+
+                <div style={containerStyle} className="ag-fresh">
+                    <h1>Capacity and Performance</h1>
+                    <AgGridReact
+                        // properties
+                        columnDefs={this.state.columnDefs}
+                        rowData={this.state.rowData}
+                        enableSorting
+                        enableFilter
+                        floatingFilter
+                        rowSelection="multiple"
 
 
-                    // events
-                    onGridReady={this.onGridReady}>
-                </AgGridReact>
+
+                        // events
+                        onGridReady={this.onGridReady}>
+                    </AgGridReact>
+                </div>
             </div>
-			</div>
         )
     }
 }
@@ -282,7 +288,7 @@ import Navigation1 from "../NewFunctionalScore/Navigation1";
 const authCondition = (authUser) => !!authUser;
 
 export default compose(
-  withAuthorization(authCondition),
-  inject('userStore'),
-  observer
+    withAuthorization(authCondition),
+    inject('userStore'),
+    observer
 )(CapacityandPerformancePage);

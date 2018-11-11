@@ -58,7 +58,8 @@ class Environment extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value
+        value: snapshot.val().value,
+        id: snapshot.val().id
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -67,7 +68,7 @@ class Environment extends Component {
     rootRef3.on("child_added", snapshot => {
       let scores = {
         label: snapshot.val().label,
-        value: snapshot.val().value
+        value: snapshot.val().value,
       };
       this.setState(prevState => ({
         scores: [...prevState.scores, scores]
@@ -109,6 +110,7 @@ class Environment extends Component {
       subDomain: this.state.selectedOption2.label,
       comment: this.state.c,
       assessmentDate: this.state.date.format("DD-MMM-YY"),
+      id: this.state.selectedOption2.id,
 
       ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
       ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },

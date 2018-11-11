@@ -9,7 +9,10 @@ import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 
-export default class EnvironmentModal extends Component {
+// This component is incomplete. Having trouble getting it to fetch the dropdown items again when category is changed.
+// May need to fix later on to allow for better scalability
+
+export default class NewScoreModal extends Component {
     constructor() {
         super();
         this.state = {
@@ -28,12 +31,52 @@ export default class EnvironmentModal extends Component {
         this.getDropdownData();
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.scoreCategory !== this.props.scoreCategory) {
+            this.getDropdownData();
+        }
+    }
+
     //firebase fetch
     getDropdownData() {
         var ref = firebase.database().ref();
-        let rootRef = ref.child("environment").child("domain");
-        let rootRef2 = ref.child("environment").child("subDomain");
-        let rootRef3 = ref.child("Functional_Scores").child("environment");
+        let rootRef;
+        let rootRef2;
+        let rootRef3;
+        let rootRef4;
+        console.log(`Modal changed with ${this.props.scoreCategory}`);
+
+        // Get the rootRefs based on the current selected category
+        if (this.props.scoreCategory === 'Impairment of Body Functions') {
+
+            rootRef = ref.child("impairment_of_body_functions").child("domain");
+            rootRef2 = ref.child("impairment_of_body_functions").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("impairment_of_body_functions");
+
+        } else if (this.props.scoreCategory === 'Capacity and Performance') {
+
+            rootRef = ref.child("capacity_and_performance").child("domain");
+            rootRef2 = ref.child("capacity_and_performance").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("capacity");
+            rootRef4 = ref.child("Functional_Scores").child("performance");
+
+            rootRef4.on("child_added", snapshot => {
+                let scores_p = {
+                    label: snapshot.val().label,
+                    value: snapshot.val().value
+                };
+                this.setState(prevState => ({
+                    scores_p: [...prevState.scores_p, scores_p]
+                }));
+            });
+
+        } else if (this.props.scoreCategory === 'Environment') {
+            console.log('Score category env');
+            rootRef = ref.child("environment").child("domain");
+            rootRef2 = ref.child("environment").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("environment");
+
+        }
 
         rootRef.on("child_added", snapshot => {
             let element = {
@@ -109,16 +152,11 @@ export default class EnvironmentModal extends Component {
             assessmentDate: this.state.date.format("DD-MMM-YY"),
             id: this.state.selectedOption2.id,
 
-            ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
-            ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
-            ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
-            ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
-
-            ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
-            ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
-            ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
-            ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
-            ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
+            ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
+            ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
+            ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
+            ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
+            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
         };
 
         // TODO: Refreshing is not working, need to fix later
@@ -144,7 +182,6 @@ export default class EnvironmentModal extends Component {
         return (
             <div>
                 <Modal
-                    ariaHideApp={false}
                     isOpen={!!this.props.selectedModal}
                     onRequestClose={this.props.handleCloseModal}
                     contentLabel="ScoreModal"

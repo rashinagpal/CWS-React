@@ -1,14 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import * as routes from "../../constants/routes";
 
 import { inject, observer } from "mobx-react";
 import { compose } from "recompose";
 import Select from "react-select";
 
 import withAuthorization from "../Session/withAuthorization";
-import { db } from "../../firebase";
 import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
@@ -70,7 +66,14 @@ class ImpairmentofBodyFunctionsPage extends Component {
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
       data.push(snapshot.val());
-
+      // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+      data.sort((a, b) => {
+        if (a.id === b.id) {
+          // Sort by date when they are part of the same subdomain
+          return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+        }
+        return a.id > b.id ? 1 : -1;
+      });
     });
     this.setState({
       rowData: data
