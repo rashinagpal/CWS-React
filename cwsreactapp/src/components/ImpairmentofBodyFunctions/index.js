@@ -90,6 +90,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Domain",
         field: "domain",
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -97,6 +102,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Subdomain",
         field: "subDomain",
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -105,6 +115,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "Care Provider",
         field: "careProvider",
         width: 100,
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -113,6 +128,24 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "Assessment Date",
         field: "assessmentDate",
         width: 100,
+        filter: "agDateColumnFilter",
+        filterParams: {
+          comparator: function(filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue;
+            var dateParts = dateAsString.split("/");
+            var cellDate = new Date(Number(dateParts[2]), Number(dateParts[1]) - 1, Number(dateParts[0]));
+            if (filterLocalDateAtMidnight.getTime() == cellDate.getTime()) {
+              return 0;
+            }
+              if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+              }
+              if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+              }
+            },
+            clearButton: true
+            },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -121,6 +154,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "0",
         field: "NoImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-green": "x === 0",
           "rag-grey": "rowIndex % 2 === 1 && x !== 0"
@@ -130,6 +168,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "1",
         field: "MildImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-lime": "x === 1",
           "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -139,6 +182,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "2",
         field: "ModerateImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-yellow": "x === 2",
           "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -148,6 +196,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "3",
         field: "SevereImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-orange": "x === 3",
           "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -157,6 +210,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "4",
         field: "CompleteImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-red": "x === 4",
           "rag-grey": "rowIndex % 2 === 1 && x !== 4",
@@ -166,6 +224,10 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Comment",
         field: "comment",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
