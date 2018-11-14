@@ -33,7 +33,8 @@ class NewFunctionalScorePage extends Component {
       columnDefs: columnDefs.getImpairmentColumns(),
       rowData: "",
       selectedModal: undefined,
-      modalOpen: false
+      modalOpen: false,
+      rowSelection: "multiple"
     };
   }
 
@@ -132,6 +133,12 @@ class NewFunctionalScorePage extends Component {
     this.setState(() => ({ modalOpen: true }))
   }
 
+  // onRemoveSelected() {
+  //   var selectedData = this.gridApi.getSelectedRows();
+  //   var res = this.gridApi.updateRowData({ remove: selectedData });
+  //   printResult(res);
+  // }
+
   render() {
     let containerStyle = {
       height: 500,
@@ -195,6 +202,23 @@ class NewFunctionalScorePage extends Component {
           Add New Functional Score
         </button>
 
+        <div style={{ marginTop: "4px", position: "absolute", left: "1200px"  }}>
+        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >+</button>
+        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >x</button>
+        {/* <button onClick={this.onRemoveSelected.bind(this)}>x</button> */}
+        </div>
+
+        <div style={{ marginTop: "4px", position: "absolute" }}>
+        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >Select Domain</button>
+        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >Select Sub-Domain</button>
+        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >Scores</button>
+        </div>
+
         <div style={containerStyle} className="ag-fresh">
           <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
@@ -204,7 +228,7 @@ class NewFunctionalScorePage extends Component {
             enableSorting
             enableFilter
             floatingFilter
-            rowSelection="multiple"
+            rowSelection={this.state.rowSelection}
             // events
             onGridReady={this.onGridReady}
           />
