@@ -131,12 +131,14 @@ export default class CapacityAndPerformanceModal extends Component {
             ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
             ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
             ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
+            ...(this.state.selectedScore_c.value == 9) && { NotApplicableC: 9 },
 
             ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
             ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
             ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
             ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
             ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
+            ...(this.state.selectedScore_p.value == 9) && { NotApplicableP: 9 },
         };
 
         // TODO: Refreshing is not working, need to fix later
