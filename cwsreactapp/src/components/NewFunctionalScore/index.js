@@ -220,6 +220,7 @@ class NewFunctionalScorePage extends Component {
         </div>
 
         <div style={containerStyle} className="ag-fresh">
+        <br />
           <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
             // properties
