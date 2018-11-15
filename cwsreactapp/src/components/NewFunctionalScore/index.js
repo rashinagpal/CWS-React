@@ -66,6 +66,10 @@ class NewFunctionalScorePage extends Component {
   }
 
   getReports = () => {
+    // Clear rowData first
+    this.setState({
+      rowData: undefined
+    });
     console.log(`getReports called for Patient: ${this.state.selectedPatient.value} and Category: ${this.state.selectedReportCategory.value}`);
     // Check if both a patient and category have been selected before querying the DB
     if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
@@ -193,6 +197,10 @@ class NewFunctionalScorePage extends Component {
           disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
         >
           Add New Functional Score
+        </button>
+
+        <button onClick={this.getReports}>
+          Refresh
         </button>
 
         <div style={containerStyle} className="ag-fresh">
