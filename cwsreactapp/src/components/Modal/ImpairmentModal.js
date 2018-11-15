@@ -113,7 +113,8 @@ export default class ImpairmentModal extends Component {
             ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
             ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
             ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
-            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
+            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 },
+            ...(this.state.selectedScore.value === 9) && { NotApplicable: 9 }
         };
 
         // TODO: Refreshing is not working, need to fix later
