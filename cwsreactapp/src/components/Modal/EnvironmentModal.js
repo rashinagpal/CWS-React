@@ -118,7 +118,8 @@ export default class EnvironmentModal extends Component {
             ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
             ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
             ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
-            ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
+            ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 },
+            ...(this.state.selectedScore.value == 9) && { NotApplicable: 9 }
         };
 
         // TODO: Refreshing is not working, need to fix later

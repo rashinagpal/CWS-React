@@ -33,7 +33,8 @@ class NewFunctionalScorePage extends Component {
       columnDefs: columnDefs.getImpairmentColumns(),
       rowData: "",
       selectedModal: undefined,
-      modalOpen: false
+      modalOpen: false,
+      rowSelection: "multiple"
     };
   }
 
@@ -136,6 +137,12 @@ class NewFunctionalScorePage extends Component {
     this.setState(() => ({ modalOpen: true }))
   }
 
+  // onRemoveSelected() {
+  //   var selectedData = this.gridApi.getSelectedRows();
+  //   var res = this.gridApi.updateRowData({ remove: selectedData });
+  //   printResult(res);
+  // }
+
   render() {
     let containerStyle = {
       height: 500,
@@ -204,6 +211,7 @@ class NewFunctionalScorePage extends Component {
         </button>
 
         <div style={containerStyle} className="ag-fresh">
+        <br />
           <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
             // properties
@@ -212,7 +220,7 @@ class NewFunctionalScorePage extends Component {
             enableSorting
             enableFilter
             floatingFilter
-            rowSelection="multiple"
+            rowSelection={this.state.rowSelection}
             // events
             onGridReady={this.onGridReady}
           />
