@@ -142,7 +142,7 @@ class ImpairmentModal extends Component {
         return (
             <div>
                 <Modal
-                    isOpen={true}
+                    isOpen={false}
                     onRequestClose={this.props.handleClose}
                     contentLabel="Test"
                     closeTimeoutMS={200}
