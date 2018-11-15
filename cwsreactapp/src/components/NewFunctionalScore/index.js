@@ -67,6 +67,10 @@ class NewFunctionalScorePage extends Component {
   }
 
   getReports = () => {
+    // Clear rowData first
+    this.setState({
+      rowData: undefined
+    });
     console.log(`getReports called for Patient: ${this.state.selectedPatient.value} and Category: ${this.state.selectedReportCategory.value}`);
     // Check if both a patient and category have been selected before querying the DB
     if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
@@ -202,22 +206,9 @@ class NewFunctionalScorePage extends Component {
           Add New Functional Score
         </button>
 
-        <div style={{ marginTop: "4px", position: "absolute", left: "1200px"  }}>
-        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
-        >+</button>
-        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
-        >x</button>
-        {/* <button onClick={this.onRemoveSelected.bind(this)}>x</button> */}
-        </div>
-
-        <div style={{ marginTop: "4px", position: "absolute" }}>
-        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
-        >Select Domain</button>
-        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
-        >Select Sub-Domain</button>
-        <button disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
-        >Scores</button>
-        </div>
+        <button onClick={this.getReports}>
+          Refresh
+        </button>
 
         <div style={containerStyle} className="ag-fresh">
         <br />
