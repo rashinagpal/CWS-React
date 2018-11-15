@@ -9,11 +9,15 @@ import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
 
-import Navigation1 from "../NewFunctionalScore/Navigation1";
 import ImpairmentModal from '../Modal/ImpairmentModal';
+import CapacityAndPerformanceModal from '../Modal/CapacityAndPerformanceModal';
+import EnvironmentModal from '../Modal/EnvironmentModal';
+import '../../constants/column-defs';
+import columnDefs from "../../constants/column-defs";
+import Navigation1 from "./Navigation1";
 
 const reportCategories = [
-  { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions'},
+  { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions' },
   { value: 'Capacity and Performance', label: 'Capacity and Performance' },
   { value: 'Environment', label: 'Environment' },
 ];
@@ -25,9 +29,12 @@ class NewFunctionalScorePage extends Component {
     this.state = {
       patients: [],
       selectedPatient: {},
-      selectedReportCategory: {},
-      columnDefs: this.createColumnDefs(),
-      rowData: ""
+      selectedReportCategory: reportCategories[0],
+      columnDefs: columnDefs.getImpairmentColumns(),
+      rowData: "",
+      selectedModal: undefined,
+      modalOpen: false,
+      rowSelection: "multiple"
     };
   }
 
@@ -59,11 +66,14 @@ class NewFunctionalScorePage extends Component {
     });
   }
 
-  getReports() {
-    console.log('Checking reports');
+  getReports = () => {
+    // Clear rowData first
+    this.setState({
+      rowData: undefined
+    });
+    console.log(`getReports called for Patient: ${this.state.selectedPatient.value} and Category: ${this.state.selectedReportCategory.value}`);
     // Check if both a patient and category have been selected before querying the DB
     if (this.state.selectedPatient.label && this.state.selectedReportCategory.label) {
-      console.log('Querying DB');
       var rootRef = firebase
         .database()
         .ref()
@@ -77,7 +87,14 @@ class NewFunctionalScorePage extends Component {
       rootRef.on("child_added", snapshot => {
         // Store all the labels in array
         data.push(snapshot.val());
-
+        // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+        data.sort((a, b) => {
+          if (a.id === b.id) {
+            // Sort by date when they are part of the same subdomain
+            return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+          }
+          return a.id > b.id ? 1 : -1;
+        });
       });
       this.setState({
         rowData: data
@@ -85,107 +102,46 @@ class NewFunctionalScorePage extends Component {
     }
   }
 
+
   handleChangePatient = selectedPatient => {
     this.setState({ selectedPatient }, () => this.getReports());
   };
 
   handleChangeCategory = selectedReportCategory => {
-    this.setState({ selectedReportCategory }, () => this.getReports());
+    let newState = {
+      selectedReportCategory,
+      columnDefs: columnDefs.getImpairmentColumns()
+    };
+
+    if (selectedReportCategory.value === reportCategories[0].value) {
+      newState.columnDefs = columnDefs.getImpairmentColumns();
+    }
+    else if (selectedReportCategory.value === reportCategories[1].value) {
+      newState.columnDefs = columnDefs.getCapacityColumns();
+    }
+    else if (selectedReportCategory.value === reportCategories[2].value) {
+      newState.columnDefs = columnDefs.getEnvironmentColumns();
+    }
+    
+    this.setState({ 
+        selectedReportCategory: newState.selectedReportCategory,
+        columnDefs: newState.columnDefs
+      }, () => this.getReports());
   }
 
-  // TODO: Dynamic grid changing when a different category is selected
-
-  createColumnDefs() {
-    return [
-      {
-        headerName: "Domain",
-        field: "domain",
-        cellClassRules: {
-          "rag-grey": "rowIndex % 2 === 1"
-        }
-      },
-      {
-        headerName: "Subdomain",
-        field: "subDomain",
-        cellClassRules: {
-          "rag-grey": "rowIndex % 2 === 1"
-        }
-      },
-      {
-        headerName: "Care Provider",
-        field: "careProvider",
-        width: 100,
-        cellClassRules: {
-          "rag-grey": "rowIndex % 2 === 1"
-        }
-      },
-      {
-        headerName: "Assessment Date",
-        field: "assessmentDate",
-        width: 100,
-        cellClassRules: {
-          "rag-grey": "rowIndex % 2 === 1"
-        }
-      },
-      {
-        headerName: "0",
-        field: "NoImpairment",
-        width: 30,
-        cellClassRules: {
-          "rag-green": "x === 0",
-          "rag-grey": "rowIndex % 2 === 1 && x !== 0"
-        }
-      },
-      {
-        headerName: "1",
-        field: "MildImpairment",
-        width: 30,
-        cellClassRules: {
-          "rag-lime": "x === 1",
-          "rag-grey": "rowIndex % 2 === 1 && x !== 1"
-        }
-      },
-      {
-        headerName: "2",
-        field: "ModerateImpairment",
-        width: 30,
-        cellClassRules: {
-          "rag-yellow": "x === 2",
-          "rag-grey": "rowIndex % 2 === 1 && x !== 2"
-        }
-      },
-      {
-        headerName: "3",
-        field: "SevereImpairment",
-        width: 30,
-        cellClassRules: {
-          "rag-orange": "x === 3",
-          "rag-grey": "rowIndex % 2 === 1 && x !== 3"
-        }
-      },
-      {
-        headerName: "4",
-        field: "CompleteImpairment",
-        width: 30,
-        cellClassRules: {
-          "rag-red": "x === 4",
-          "rag-grey": "rowIndex % 2 === 1 && x !== 4",
-          width: 100
-        }
-      },
-      {
-        headerName: "Comment",
-        field: "comment",
-        cellClassRules: {
-          "rag-grey": "rowIndex % 2 === 1"
-        }
-      }
-    ];
+  handleCloseModal = () => {
+    this.setState(() => ({ modalOpen: false }))
   }
 
-  handleClose() {
-    // this.setState(({  }));
+  handleOpenModal = () => {
+    this.setState(() => ({ modalOpen: true }))
   }
+
+  // onRemoveSelected() {
+  //   var selectedData = this.gridApi.getSelectedRows();
+  //   var res = this.gridApi.updateRowData({ remove: selectedData });
+  //   printResult(res);
+  // }
 
   render() {
     let containerStyle = {
@@ -197,9 +153,33 @@ class NewFunctionalScorePage extends Component {
       <div>
         <b>Select Patient</b>
         <ImpairmentModal
-          isSelectedd={true}
-          handleClose={this.handleClose}
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[0].value }
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData}
         />
+        <CapacityAndPerformanceModal
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[1].value}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData}
+        />
+        <EnvironmentModal
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[2].value}
+          handleCloseModal={this.handleCloseModal}
+          sessionStore={this.props.sessionStore}
+          patient={this.state.selectedPatient.value}
+          scoreCategory={this.state.selectedReportCategory.value}
+          handleRefresh={this.getReports}
+          rowData={this.state.rowData} 
+        />
+        
         <Select
           className="m-2"
           options={this.state.patients}
@@ -217,10 +197,22 @@ class NewFunctionalScorePage extends Component {
           onChange={this.handleChangeCategory}
         />
 
-        <Navigation1 />
+        <br />
+
+        <button 
+          onClick={this.handleOpenModal}
+          disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
+        >
+          Add New Functional Score
+        </button>
+
+        <button onClick={this.getReports}>
+          Refresh
+        </button>
 
         <div style={containerStyle} className="ag-fresh">
-          <h1>Impairment of Body Functions</h1>
+        <br />
+          <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
             // properties
             columnDefs={this.state.columnDefs}
@@ -228,7 +220,7 @@ class NewFunctionalScorePage extends Component {
             enableSorting
             enableFilter
             floatingFilter
-            rowSelection="multiple"
+            rowSelection={this.state.rowSelection}
             // events
             onGridReady={this.onGridReady}
           />
@@ -242,6 +234,6 @@ const authCondition = authUser => !!authUser;
 
 export default compose(
   withAuthorization(authCondition),
-  inject("userStore"),
+  inject("sessionStore"),
   observer
 )(NewFunctionalScorePage);

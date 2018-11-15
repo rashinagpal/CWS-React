@@ -9,7 +9,10 @@ import DatePicker from "react-datepicker";
 import "../../../node_modules/react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 
-export default class CapacityAndPerformanceModal extends Component {
+// This component is incomplete. Having trouble getting it to fetch the dropdown items again when category is changed.
+// May need to fix later on to allow for better scalability
+
+export default class NewScoreModal extends Component {
     constructor() {
         super();
         this.state = {
@@ -17,10 +20,8 @@ export default class CapacityAndPerformanceModal extends Component {
             selectedOption2: {},
             options1: [],
             options2: [],
-            scores_c: [],
-            scores_p: [],
-            selectedScore_c: {},
-            selectedScore_p: {},
+            scores: [],
+            selectedScore: {},
             date: moment(),
             c: "",
         };
@@ -30,13 +31,52 @@ export default class CapacityAndPerformanceModal extends Component {
         this.getDropdownData();
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.scoreCategory !== this.props.scoreCategory) {
+            this.getDropdownData();
+        }
+    }
+
     //firebase fetch
     getDropdownData() {
         var ref = firebase.database().ref();
-        let rootRef = ref.child("capacity_and_performance").child("domain");
-        let rootRef2 = ref.child("capacity_and_performance").child("subDomain");
-        let rootRef3 = ref.child("Functional_Scores").child("capacity");
-        let rootRef4 = ref.child("Functional_Scores").child("performance");
+        let rootRef;
+        let rootRef2;
+        let rootRef3;
+        let rootRef4;
+        console.log(`Modal changed with ${this.props.scoreCategory}`);
+
+        // Get the rootRefs based on the current selected category
+        if (this.props.scoreCategory === 'Impairment of Body Functions') {
+
+            rootRef = ref.child("impairment_of_body_functions").child("domain");
+            rootRef2 = ref.child("impairment_of_body_functions").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("impairment_of_body_functions");
+
+        } else if (this.props.scoreCategory === 'Capacity and Performance') {
+
+            rootRef = ref.child("capacity_and_performance").child("domain");
+            rootRef2 = ref.child("capacity_and_performance").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("capacity");
+            rootRef4 = ref.child("Functional_Scores").child("performance");
+
+            rootRef4.on("child_added", snapshot => {
+                let scores_p = {
+                    label: snapshot.val().label,
+                    value: snapshot.val().value
+                };
+                this.setState(prevState => ({
+                    scores_p: [...prevState.scores_p, scores_p]
+                }));
+            });
+
+        } else if (this.props.scoreCategory === 'Environment') {
+            console.log('Score category env');
+            rootRef = ref.child("environment").child("domain");
+            rootRef2 = ref.child("environment").child("subDomain");
+            rootRef3 = ref.child("Functional_Scores").child("environment");
+
+        }
 
         rootRef.on("child_added", snapshot => {
             let element = {
@@ -61,22 +101,12 @@ export default class CapacityAndPerformanceModal extends Component {
         });
 
         rootRef3.on("child_added", snapshot => {
-            let scores_c = {
+            let scores = {
                 label: snapshot.val().label,
                 value: snapshot.val().value
             };
             this.setState(prevState => ({
-                scores_c: [...prevState.scores_c, scores_c]
-            }));
-        });
-
-        rootRef4.on("child_added", snapshot => {
-            let scores_p = {
-                label: snapshot.val().label,
-                value: snapshot.val().value
-            };
-            this.setState(prevState => ({
-                scores_p: [...prevState.scores_p, scores_p]
+                scores: [...prevState.scores, scores]
             }));
         });
     }
@@ -92,15 +122,11 @@ export default class CapacityAndPerformanceModal extends Component {
         this.setState({ selectedOption2: selectedOption });
     };
 
-    handleChange3 = selectedScore_c => {
-        this.setState({ selectedScore_c });
+    handleChange3 = selectedScore => {
+        this.setState({ selectedScore });
     };
 
-    handleChange4 = selectedScore_p => {
-        this.setState({ selectedScore_p });
-    };
-
-    handleChange5 = e => {
+    handleChange4 = e => {
         this.setState({ c: e.target.value });
     };
 
@@ -122,23 +148,15 @@ export default class CapacityAndPerformanceModal extends Component {
             careProvider: this.getCurrentUser(),
             domain: this.state.selectedOption.label,
             subDomain: this.state.selectedOption2.label,
-            capacitycomment: this.state.c,
+            comment: this.state.c,
             assessmentDate: this.state.date.format("DD-MMM-YY"),
             id: this.state.selectedOption2.id,
 
-            ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
-            ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
-            ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
-            ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
-            ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
-            ...(this.state.selectedScore_c.value == 9) && { NotApplicableC: 9 },
-
-            ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
-            ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
-            ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
-            ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
-            ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
-            ...(this.state.selectedScore_p.value == 9) && { NotApplicableP: 9 },
+            ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
+            ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
+            ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
+            ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
+            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 }
         };
 
         // TODO: Refreshing is not working, need to fix later
@@ -164,7 +182,6 @@ export default class CapacityAndPerformanceModal extends Component {
         return (
             <div>
                 <Modal
-                    ariaHideApp={false}
                     isOpen={!!this.props.selectedModal}
                     onRequestClose={this.props.handleCloseModal}
                     contentLabel="ScoreModal"
@@ -196,26 +213,14 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
-                        <b>Select Functional Score - Capacity</b>
+                        <b>Select Functional Score</b>
                     </p>
                     <Select
                         className="m-2"
                         name="form-field-name"
-                        options={this.state.scores_c}
+                        options={this.state.scores}
                         onChange={this.handleChange3}
-                        value={this.state.selectedScore_c}
-                    />
-
-                    <p className="m-2">
-                        <b>Select Functional Score - Performance</b>
-                    </p>
-                    <Select
-                        className="m-2"
-                        name="form-field-name"
-                        placeholder="Select Score"
-                        options={this.state.scores_p}
-                        onChange={this.handleChange4}
-                        value={this.state.selectedScore_p}
+                        value={this.state.selectedScore.querySelector}
                     />
 
                     <p className="m-2">
@@ -235,7 +240,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     <FormControl
                         type="text"
                         placeholder="Enter comment"
-                        onChange={this.handleChange5}
+                        onChange={this.handleChange4}
                         value={this.state.c}
                     />
 

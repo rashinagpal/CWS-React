@@ -16,7 +16,9 @@
 .rag-grey {
   background-color: lightgrey;
 }
-
+.rag-white {
+  background-color: white;
+}
 .rag-cream {
     background-color: #FFFFCC;
 }
@@ -94,6 +96,7 @@
 }
 
 .modal__button {
-  font-size: 15px;
   cursor: pointer;
+  font-size: 15px;
+  margin: 0 10px;
 }

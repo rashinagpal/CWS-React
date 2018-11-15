@@ -1,14 +1,10 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import * as routes from "../../constants/routes";
 
 import { inject, observer } from "mobx-react";
 import { compose } from "recompose";
 import Select from "react-select";
 
 import withAuthorization from "../Session/withAuthorization";
-import { db } from "../../firebase";
 import { AgGridReact } from "ag-grid-react";
 import * as firebase from "firebase";
 import "firebase/database";
@@ -80,6 +76,14 @@ class ImpairmentofBodyFunctionsPage extends Component {
     rootRef.on("child_added", snapshot => {
       // Store all the labels in array
       data.push(snapshot.val());
+      // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+      data.sort((a, b) => {
+        if (a.id === b.id) {
+          // Sort by date when they are part of the same subdomain
+          return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+        }
+        return a.id > b.id ? 1 : -1;
+      });
     });
     this.setState({
       rowData: data
@@ -96,6 +100,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Domain",
         field: "domain",
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -103,6 +112,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Subdomain",
         field: "subDomain",
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -111,6 +125,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "Care Provider",
         field: "careProvider",
         width: 100,
+        filter: "agTextColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -119,6 +138,24 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "Assessment Date",
         field: "assessmentDate",
         width: 100,
+        filter: "agDateColumnFilter",
+        filterParams: {
+          comparator: function(filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue;
+            var dateParts = dateAsString.split("/");
+            var cellDate = new Date(Number(dateParts[2]), Number(dateParts[1]) - 1, Number(dateParts[0]));
+            if (filterLocalDateAtMidnight.getTime() == cellDate.getTime()) {
+              return 0;
+            }
+              if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+              }
+              if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+              }
+            },
+            clearButton: true
+            },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }
@@ -127,6 +164,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "0",
         field: "NoImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-green": "x === 0",
           "rag-grey": "rowIndex % 2 === 1 && x !== 0"
@@ -136,6 +178,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "1",
         field: "MildImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-lime": "x === 1",
           "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -145,6 +192,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "2",
         field: "ModerateImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-yellow": "x === 2",
           "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -154,6 +206,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "3",
         field: "SevereImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-orange": "x === 3",
           "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -163,6 +220,11 @@ class ImpairmentofBodyFunctionsPage extends Component {
         headerName: "4",
         field: "CompleteImpairment",
         width: 30,
+        filter: "agNumberColumnFilter",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-red": "x === 4",
           "rag-grey": "rowIndex % 2 === 1 && x !== 4",
@@ -172,6 +234,10 @@ class ImpairmentofBodyFunctionsPage extends Component {
       {
         headerName: "Comment",
         field: "comment",
+        filterParams: {
+          applyButton: true,
+          clearButton: true
+        },
         cellClassRules: {
           "rag-grey": "rowIndex % 2 === 1"
         }

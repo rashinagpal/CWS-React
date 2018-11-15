@@ -59,7 +59,8 @@ class Capacity extends Component {
       let element2 = {
         label: snapshot.val().label,
         link: snapshot.val().link,
-        value: snapshot.val().value
+        value: snapshot.val().value,
+        id: snapshot.val().id
       };
       this.setState(prevState => ({
         options2: [...prevState.options2, element2]
@@ -124,6 +125,7 @@ class Capacity extends Component {
       subDomain: this.state.selectedOption2.label,
       capacitycomment: this.state.c,
       assessmentDate: this.state.date.format("DD-MMM-YY"),
+      id: this.state.selectedOption2.id,
 
       ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
       ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
