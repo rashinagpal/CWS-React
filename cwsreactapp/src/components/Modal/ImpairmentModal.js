@@ -117,7 +117,6 @@ export default class ImpairmentModal extends Component {
             ...(this.state.selectedScore.value === 9) && { NotApplicable: 9 }
         };
 
-        // TODO: Refreshing is not working, need to fix later
         this.onCloseModal();
         postRef.push(object).then(() => {
             this.props.handleRefresh();
