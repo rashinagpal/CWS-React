@@ -13,14 +13,14 @@ export default class CapacityAndPerformanceModal extends Component {
     constructor() {
         super();
         this.state = {
-            selectedOption: {},
-            selectedOption2: {},
+            selectedOption: undefined,
+            selectedOption2: undefined,
             options1: [],
             options2: [],
             scores_c: [],
             scores_p: [],
-            selectedScore_c: {},
-            selectedScore_p: {},
+            selectedScore_c: undefined,
+            selectedScore_p: undefined,
             date: moment(),
             c: "",
         };
@@ -88,8 +88,8 @@ export default class CapacityAndPerformanceModal extends Component {
         this.setState({ selectedOption });
     };
 
-    handleChange2 = selectedOption => {
-        this.setState({ selectedOption2: selectedOption });
+    handleChange2 = selectedOption2 => {
+        this.setState({ selectedOption2 });
     };
 
     handleChange3 = selectedScore_c => {
@@ -141,8 +141,7 @@ export default class CapacityAndPerformanceModal extends Component {
             ...(this.state.selectedScore_p.value == 9) && { NotApplicableP: 9 },
         };
 
-        // TODO: Refreshing is not working, need to fix later
-        this.props.handleCloseModal();
+        this.onCloseModal();
         postRef.push(object).then(() => {
             this.props.handleRefresh();
         }).catch((error) => {
@@ -156,17 +155,31 @@ export default class CapacityAndPerformanceModal extends Component {
         return user;
     }
 
-    render() {
-        const filteredOptions = this.state.options2.filter(
-            o => o.link === this.state.selectedOption.value
-        );
+    onCloseModal = () => {
+        // Uncache the score and comment
+        this.setState({
+            selectedScore_c: undefined,
+            selectedScore_p: undefined,
+            c: undefined
+        });
 
+        this.props.handleCloseModal();
+    }
+
+    render() {
+        let filteredOptions;
+
+        if (this.state.selectedOption) {
+            filteredOptions = this.state.options2.filter(
+                o => o.link === this.state.selectedOption.value
+            );
+        }
         return (
             <div>
                 <Modal
                     ariaHideApp={false}
                     isOpen={!!this.props.selectedModal}
-                    onRequestClose={this.props.handleCloseModal}
+                    onRequestClose={this.onCloseModal}
                     contentLabel="ScoreModal"
                     closeTimeoutMS={200}
                     className="modal"
@@ -179,7 +192,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     <Select
                         className="m-2"
                         name="form-field-name"
-                        value={this.state.selectedOption.querySelector}
+                        value={this.state.selectedOption}
                         onChange={this.handleChange1}
                         options={this.state.options1}
                     />
@@ -190,7 +203,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     <Select
                         className="m-2"
                         name="form-field-name"
-                        value={this.state.selectedOption2.querySelector}
+                        value={this.state.selectedOption2}
                         onChange={this.handleChange2}
                         options={filteredOptions}
                     />
@@ -251,7 +264,7 @@ export default class CapacityAndPerformanceModal extends Component {
 
                     <button
                         className="modal__button"
-                        onClick={this.props.handleCloseModal}
+                        onClick={this.onCloseModal}
                     >
                         Cancel
                     </button>
