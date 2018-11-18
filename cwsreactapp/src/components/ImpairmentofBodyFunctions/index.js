@@ -34,7 +34,17 @@ class ImpairmentofBodyFunctionsPage extends Component {
   componentWillMount() {
     this.getPatients();
   }
-
+  deleteReport(patientId, reportId) {
+    var deleteRef = firebase
+      .database()
+      .ref()
+      .child("patients")
+      .child(patientId)
+      .child("reports")
+      .child("Impairement of Body Functions")
+      .child("");
+    deleteRef.remove(reportId);
+  }
   getPatients() {
     var rootRef = firebase
       .database()
@@ -43,7 +53,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
 
     rootRef.on("child_added", snapshot => {
       let element = {
-        value: snapshot.val().label.split(' - ')[0],
+        value: snapshot.val().label.split(" - ")[0],
         label: snapshot.val().label
       };
       this.setState(prevState => ({
@@ -267,6 +277,7 @@ class ImpairmentofBodyFunctionsPage extends Component {
             // events
             onGridReady={this.onGridReady}
           />
+          <button onClick={this.deleteReport}> Delete </button>
         </div>
       </div>
     );

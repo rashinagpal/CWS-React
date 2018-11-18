@@ -13,12 +13,12 @@ export default class EnvironmentModal extends Component {
     constructor() {
         super();
         this.state = {
-            selectedOption: {},
-            selectedOption2: {},
+            selectedOption: undefined,
+            selectedOption2: undefined,
             options1: [],
             options2: [],
             scores: [],
-            selectedScore: {},
+            selectedScore: undefined,
             date: moment(),
             c: "",
         };
@@ -75,8 +75,8 @@ export default class EnvironmentModal extends Component {
         this.setState({ selectedOption });
     };
 
-    handleChange2 = selectedOption => {
-        this.setState({ selectedOption2: selectedOption });
+    handleChange2 = selectedOption2 => {
+        this.setState({ selectedOption2 });
     };
 
     handleChange3 = selectedScore => {
@@ -92,42 +92,43 @@ export default class EnvironmentModal extends Component {
     };
 
     handleSubmit = id => {
+        if (this.requiredFieldsFilled()) {
+            var postRef = firebase
+                .database()
+                .ref()
+                .child("patient")
+                .child(this.props.patient)
+                .child("reports")
+                .child(this.props.scoreCategory);
 
-        var postRef = firebase
-            .database()
-            .ref()
-            .child("patient")
-            .child(this.props.patient)
-            .child("reports")
-            .child(this.props.scoreCategory);
+            const object = {
+                careProvider: this.getCurrentUser(),
+                domain: this.state.selectedOption.label,
+                subDomain: this.state.selectedOption2.label,
+                comment: this.state.c,
+                assessmentDate: this.state.date.format("DD-MMM-YY"),
+                id: this.state.selectedOption2.id,
 
-        const object = {
-            careProvider: this.getCurrentUser(),
-            domain: this.state.selectedOption.label,
-            subDomain: this.state.selectedOption2.label,
-            comment: this.state.c,
-            assessmentDate: this.state.date.format("DD-MMM-YY"),
-            id: this.state.selectedOption2.id,
+                ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
+                ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
+                ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
+                ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
 
-            ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
-            ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
-            ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
-            ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
+                ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
+                ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
+                ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
+                ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
+                ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 },
+                ...(this.state.selectedScore.value == 9) && { NotApplicable: 9 }
+            };
 
-            ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
-            ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
-            ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
-            ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
-            ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 }
-        };
-
-        // TODO: Refreshing is not working, need to fix later
-        this.props.handleCloseModal();
-        postRef.push(object).then(() => {
-            this.props.handleRefresh();
-        }).catch((error) => {
-            console.log(error);
-        });
+            this.onCloseModal();
+            postRef.push(object).then(() => {
+                this.props.handleRefresh();
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
     };
 
     getCurrentUser() {
@@ -136,46 +137,76 @@ export default class EnvironmentModal extends Component {
         return user;
     }
 
+    onCloseModal = () => {
+        // Uncache the score and comment
+        this.setState({
+            selectedScore: undefined,
+            c: "",
+            showError: false
+        });
+
+        this.props.handleCloseModal();
+    }
+
+    requiredFieldsFilled() {
+        if (!this.state.selectedOption || !this.state.selectedOption2 || !this.state.selectedScore) {
+            this.setState({ showError: true });
+            return false;
+        } else {
+            this.setState({ showError: false });
+            return true;
+        }
+    }
+
     render() {
-        const filteredOptions = this.state.options2.filter(
-            o => o.link === this.state.selectedOption.value
-        );
+        let filteredOptions;
+
+        if (this.state.selectedOption) {
+            filteredOptions = this.state.options2.filter(
+                o => o.link === this.state.selectedOption.value
+            );
+        }
 
         return (
             <div>
                 <Modal
                     ariaHideApp={false}
                     isOpen={!!this.props.selectedModal}
-                    onRequestClose={this.props.handleCloseModal}
+                    onRequestClose={this.onCloseModal}
                     contentLabel="ScoreModal"
                     closeTimeoutMS={200}
                     className="modal"
                 >
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
+                    {this.state.showError ? <p className="required">Please fill in the required fields</p> : null}
+
                     <p className="m-2">
+                        <span className="required">* </span>
                         <b>Select Domain</b>
                     </p>
                     <Select
                         className="m-2"
                         name="form-field-name"
-                        value={this.state.selectedOption.querySelector}
+                        value={this.state.selectedOption}
                         onChange={this.handleChange1}
                         options={this.state.options1}
                     />
 
                     <p className="m-2">
+                        <span className="required">* </span>
                         <b>Select Subdomain</b>
                     </p>
                     <Select
                         className="m-2"
                         name="form-field-name"
-                        value={this.state.selectedOption2.querySelector}
+                        value={this.state.selectedOption2}
                         onChange={this.handleChange2}
                         options={filteredOptions}
                     />
 
                     <p className="m-2">
+                        <span className="required">* </span>
                         <b>Select Functional Score</b>
                     </p>
                     <Select
@@ -183,7 +214,7 @@ export default class EnvironmentModal extends Component {
                         name="form-field-name"
                         options={this.state.scores}
                         onChange={this.handleChange3}
-                        value={this.state.selectedScore.querySelector}
+                        value={this.state.selectedScore}
                     />
 
                     <p className="m-2">
@@ -219,7 +250,7 @@ export default class EnvironmentModal extends Component {
 
                     <button
                         className="modal__button"
-                        onClick={this.props.handleCloseModal}
+                        onClick={this.onCloseModal}
                     >
                         Cancel
                     </button>
