@@ -163,6 +163,7 @@ export default class ImpairmentModal extends Component {
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Domain</b>
                     </p>
                     <Select
@@ -174,6 +175,7 @@ export default class ImpairmentModal extends Component {
                     />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Subdomain</b>
                     </p>
                     <Select
@@ -185,6 +187,7 @@ export default class ImpairmentModal extends Component {
                     />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Functional Score</b>
                     </p>
                     <Select

@@ -187,6 +187,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Domain</b>
                     </p>
                     <Select
@@ -198,6 +199,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Subdomain</b>
                     </p>
                     <Select
@@ -209,6 +211,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Functional Score - Capacity</b>
                     </p>
                     <Select
@@ -220,6 +223,7 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
+                        <span className="required-asterisk">* </span>
                         <b>Select Functional Score - Performance</b>
                     </p>
                     <Select

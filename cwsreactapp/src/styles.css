@@ -100,3 +100,7 @@
   font-size: 15px;
   margin: 0 10px;
 }
+
+.required-asterisk {
+  color: #ff703c;
+}
