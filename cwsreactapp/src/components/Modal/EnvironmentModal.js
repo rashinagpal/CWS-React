@@ -92,42 +92,43 @@ export default class EnvironmentModal extends Component {
     };
 
     handleSubmit = id => {
+        if (this.requiredFieldsFilled()) {
+            var postRef = firebase
+                .database()
+                .ref()
+                .child("patient")
+                .child(this.props.patient)
+                .child("reports")
+                .child(this.props.scoreCategory);
 
-        var postRef = firebase
-            .database()
-            .ref()
-            .child("patient")
-            .child(this.props.patient)
-            .child("reports")
-            .child(this.props.scoreCategory);
+            const object = {
+                careProvider: this.getCurrentUser(),
+                domain: this.state.selectedOption.label,
+                subDomain: this.state.selectedOption2.label,
+                comment: this.state.c,
+                assessmentDate: this.state.date.format("DD-MMM-YY"),
+                id: this.state.selectedOption2.id,
 
-        const object = {
-            careProvider: this.getCurrentUser(),
-            domain: this.state.selectedOption.label,
-            subDomain: this.state.selectedOption2.label,
-            comment: this.state.c,
-            assessmentDate: this.state.date.format("DD-MMM-YY"),
-            id: this.state.selectedOption2.id,
+                ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
+                ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
+                ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
+                ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
 
-            ...(this.state.selectedScore.value == -4) && { Completebarrier: -4 },
-            ...(this.state.selectedScore.value == -3) && { Severebarrier: -3 },
-            ...(this.state.selectedScore.value == -2) && { Moderatebarrier: -2 },
-            ...(this.state.selectedScore.value == -1) && { Mildbarrier: -1 },
+                ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
+                ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
+                ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
+                ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
+                ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 },
+                ...(this.state.selectedScore.value == 9) && { NotApplicable: 9 }
+            };
 
-            ...(this.state.selectedScore.value == 0) && { Nobarrierfacilitator: 0 },
-            ...(this.state.selectedScore.value == 1) && { Mildfacilitator: 1 },
-            ...(this.state.selectedScore.value == 2) && { Moderatefacilitator: 2 },
-            ...(this.state.selectedScore.value == 3) && { Substantialfacilitator: 3 },
-            ...(this.state.selectedScore.value == 4) && { Completefacilitator: 4 },
-            ...(this.state.selectedScore.value == 9) && { NotApplicable: 9 }
-        };
-
-        this.onCloseModal();
-        postRef.push(object).then(() => {
-            this.props.handleRefresh();
-        }).catch((error) => {
-            console.log(error);
-        });
+            this.onCloseModal();
+            postRef.push(object).then(() => {
+                this.props.handleRefresh();
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
     };
 
     getCurrentUser() {
@@ -144,6 +145,16 @@ export default class EnvironmentModal extends Component {
         });
 
         this.props.handleCloseModal();
+    }
+
+    requiredFieldsFilled() {
+        if (!this.state.selectedOption || !this.state.selectedOption2 || !this.state.selectedScore) {
+            this.setState({ showError: true });
+            return false;
+        } else {
+            this.setState({ showError: false });
+            return true;
+        }
     }
 
     render() {
@@ -166,6 +177,8 @@ export default class EnvironmentModal extends Component {
                     className="modal"
                 >
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
+
+                    {this.state.showError ? <p className="required">Please fill in the required fields</p> : null}
 
                     <p className="m-2">
                         <span className="required">* </span>
