@@ -141,7 +141,8 @@ export default class EnvironmentModal extends Component {
         // Uncache the score and comment
         this.setState({
             selectedScore: undefined,
-            c: ""
+            c: "",
+            showError: false
         });
 
         this.props.handleCloseModal();

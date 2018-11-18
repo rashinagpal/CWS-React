@@ -109,44 +109,45 @@ export default class CapacityAndPerformanceModal extends Component {
     };
 
     handleSubmit = id => {
+        if (this.requiredFieldsFilled()) {
+            var postRef = firebase
+                .database()
+                .ref()
+                .child("patient")
+                .child(this.props.patient)
+                .child("reports")
+                .child(this.props.scoreCategory);
 
-        var postRef = firebase
-            .database()
-            .ref()
-            .child("patient")
-            .child(this.props.patient)
-            .child("reports")
-            .child(this.props.scoreCategory);
+            const object = {
+                careProvider: this.getCurrentUser(),
+                domain: this.state.selectedOption.label,
+                subDomain: this.state.selectedOption2.label,
+                capacitycomment: this.state.c,
+                assessmentDate: this.state.date.format("DD-MMM-YY"),
+                id: this.state.selectedOption2.id,
 
-        const object = {
-            careProvider: this.getCurrentUser(),
-            domain: this.state.selectedOption.label,
-            subDomain: this.state.selectedOption2.label,
-            capacitycomment: this.state.c,
-            assessmentDate: this.state.date.format("DD-MMM-YY"),
-            id: this.state.selectedOption2.id,
+                ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
+                ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
+                ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
+                ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
+                ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
+                ...(this.state.selectedScore_c.value == 9) && { NotApplicableC: 9 },
 
-            ...(this.state.selectedScore_c.value == 0) && { NoImpairmentC: 0 },
-            ...(this.state.selectedScore_c.value == 1) && { MildImpairmentC: 1 },
-            ...(this.state.selectedScore_c.value == 2) && { ModerateImpairmentC: 2 },
-            ...(this.state.selectedScore_c.value == 3) && { SevereImpairmentC: 3 },
-            ...(this.state.selectedScore_c.value == 4) && { CompleteImpairmentC: 4 },
-            ...(this.state.selectedScore_c.value == 9) && { NotApplicableC: 9 },
+                ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
+                ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
+                ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
+                ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
+                ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
+                ...(this.state.selectedScore_p.value == 9) && { NotApplicableP: 9 },
+            };
 
-            ...(this.state.selectedScore_p.value == 0) && { NoImpairmentP: 0 },
-            ...(this.state.selectedScore_p.value == 1) && { MildImpairmentP: 1 },
-            ...(this.state.selectedScore_p.value == 2) && { ModerateImpairmentP: 2 },
-            ...(this.state.selectedScore_p.value == 3) && { SevereImpairmentP: 3 },
-            ...(this.state.selectedScore_p.value == 4) && { CompleteImpairmentP: 4 },
-            ...(this.state.selectedScore_p.value == 9) && { NotApplicableP: 9 },
-        };
-
-        this.onCloseModal();
-        postRef.push(object).then(() => {
-            this.props.handleRefresh();
-        }).catch((error) => {
-            console.log(error);
-        });
+            this.onCloseModal();
+            postRef.push(object).then(() => {
+                this.props.handleRefresh();
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
     };
 
     getCurrentUser() {
@@ -160,10 +161,21 @@ export default class CapacityAndPerformanceModal extends Component {
         this.setState({
             selectedScore_c: undefined,
             selectedScore_p: undefined,
-            c: ""
+            c: "",
+            showError: false
         });
 
         this.props.handleCloseModal();
+    }
+
+    requiredFieldsFilled() {
+        if (!this.state.selectedOption || !this.state.selectedOption2 || !this.state.selectedScore_c || !this.state.selectedScore_p) {
+            this.setState({ showError: true });
+            return false;
+        } else {
+            this.setState({ showError: false });
+            return true;
+        }
     }
 
     render() {
@@ -185,6 +197,8 @@ export default class CapacityAndPerformanceModal extends Component {
                     className="modal"
                 >
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
+
+                    {this.state.showError ? <p className="required">Please fill in the required fields</p> : null}
 
                     <p className="m-2">
                         <span className="required">* </span>

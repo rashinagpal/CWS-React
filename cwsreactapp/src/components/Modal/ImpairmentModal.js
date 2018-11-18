@@ -21,7 +21,6 @@ export default class ImpairmentModal extends Component {
             selectedScore: undefined,
             date: moment(),
             c: "",
-            showError: false
         };
     }
 
@@ -137,7 +136,8 @@ export default class ImpairmentModal extends Component {
         // Uncache the score and comment
         this.setState({ 
             selectedScore: undefined,
-            c: ""
+            c: "",
+            showError: false
         });
 
         this.props.handleCloseModal();
