@@ -140,7 +140,7 @@ export default class EnvironmentModal extends Component {
         // Uncache the score and comment
         this.setState({
             selectedScore: undefined,
-            c: undefined
+            c: ""
         });
 
         this.props.handleCloseModal();
@@ -168,7 +168,7 @@ export default class EnvironmentModal extends Component {
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Domain</b>
                     </p>
                     <Select
@@ -180,7 +180,7 @@ export default class EnvironmentModal extends Component {
                     />
 
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Subdomain</b>
                     </p>
                     <Select
@@ -192,7 +192,7 @@ export default class EnvironmentModal extends Component {
                     />
 
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Functional Score</b>
                     </p>
                     <Select

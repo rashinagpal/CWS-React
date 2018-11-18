@@ -21,6 +21,7 @@ export default class ImpairmentModal extends Component {
             selectedScore: undefined,
             date: moment(),
             c: "",
+            showError: false
         };
     }
 
@@ -92,37 +93,38 @@ export default class ImpairmentModal extends Component {
     };
 
     handleSubmit = id => {
+        if (this.requiredFieldsFilled()) {
+            var postRef = firebase
+                .database()
+                .ref()
+                .child("patient")
+                .child(this.props.patient)
+                .child("reports")
+                .child(this.props.scoreCategory);
 
-        var postRef = firebase
-            .database()
-            .ref()
-            .child("patient")
-            .child(this.props.patient)
-            .child("reports")
-            .child(this.props.scoreCategory);
+            const object = {
+                careProvider: this.getCurrentUser(),
+                domain: this.state.selectedOption.label,
+                subDomain: this.state.selectedOption2.label,
+                comment: this.state.c,
+                assessmentDate: this.state.date.format("DD-MMM-YY"),
+                id: this.state.selectedOption2.id,
 
-        const object = {
-            careProvider: this.getCurrentUser(),
-            domain: this.state.selectedOption.label,
-            subDomain: this.state.selectedOption2.label,
-            comment: this.state.c,
-            assessmentDate: this.state.date.format("DD-MMM-YY"),
-            id: this.state.selectedOption2.id,
+                ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
+                ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
+                ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
+                ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
+                ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 },
+                ...(this.state.selectedScore.value === 9) && { NotApplicable: 9 }
+            };
 
-            ...(this.state.selectedScore.value === 0) && { NoImpairment: 0 },
-            ...(this.state.selectedScore.value === 1) && { MildImpairment: 1 },
-            ...(this.state.selectedScore.value === 2) && { ModerateImpairment: 2 },
-            ...(this.state.selectedScore.value === 3) && { SevereImpairment: 3 },
-            ...(this.state.selectedScore.value === 4) && { CompleteImpairment: 4 },
-            ...(this.state.selectedScore.value === 9) && { NotApplicable: 9 }
-        };
-
-        this.onCloseModal();
-        postRef.push(object).then(() => {
-            this.props.handleRefresh();
-        }).catch((error) => {
-            console.log(error);
-        });
+            this.onCloseModal();
+            postRef.push(object).then(() => {
+                this.props.handleRefresh();
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
     };
 
     getCurrentUser() {
@@ -135,10 +137,20 @@ export default class ImpairmentModal extends Component {
         // Uncache the score and comment
         this.setState({ 
             selectedScore: undefined,
-            c: undefined
+            c: ""
         });
 
         this.props.handleCloseModal();
+    }
+
+    requiredFieldsFilled() {
+        if (!this.state.selectedOption || !this.state.selectedOption2 || !this.state.selectedScore) {
+            this.setState({ showError: true });
+            return false;
+        } else {
+            this.setState({ showError: false });
+            return true;
+        }
     }
 
     render() {
@@ -162,8 +174,10 @@ export default class ImpairmentModal extends Component {
                 >
                     <Header name={"New " + this.props.scoreCategory + " Functional Score"} />
 
+                    {this.state.showError ? <p className="required">Please fill in the required fields</p> : null}
+
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Domain</b>
                     </p>
                     <Select
@@ -175,7 +189,7 @@ export default class ImpairmentModal extends Component {
                     />
 
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Subdomain</b>
                     </p>
                     <Select
@@ -187,7 +201,7 @@ export default class ImpairmentModal extends Component {
                     />
 
                     <p className="m-2">
-                        <span className="required-asterisk">* </span>
+                        <span className="required">* </span>
                         <b>Select Functional Score</b>
                     </p>
                     <Select
