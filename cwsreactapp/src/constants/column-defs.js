@@ -130,8 +130,8 @@ export const getImpairmentColumns = () => {
               clearButton: true
             },
             cellClassRules: {
-                "rag-white": "x === 9",
-                "rag-grey": "rowIndex % 2 === 1 && x !== 9",
+             //   "rag-white": "x === 9",
+                "rag-grey": "rowIndex % 2 === 1",
                 width: 100
             }
         },
@@ -265,8 +265,8 @@ export const getCapacityColumns = () => {
                   clearButton: true
                 },
                 cellClassRules: {
-                    "rag-white": "x === 9",
-                    "rag-grey": "rowIndex % 2 === 1 && x !== 9",
+                  //  "rag-white": "x === 9",
+                    "rag-grey": "rowIndex % 2 === 1",
                     width: 100
                 }
             },
@@ -352,8 +352,8 @@ export const getCapacityColumns = () => {
                   clearButton: true
                 },
                 cellClassRules: {
-                    "rag-white": "x === 9",
-                    "rag-grey": "rowIndex % 2 === 1 && x !== 9",
+                   // "rag-white": "x === 9",
+                    "rag-grey": "rowIndex % 2 === 1",
                     width: 100
                 }
             },
@@ -545,8 +545,8 @@ export const getEnvironmentColumns = () => {
               clearButton: true
             },
             cellClassRules: {
-                "rag-white": "x === 9",
-                "rag-grey": "rowIndex % 2 === 1 && x !== 9",
+              //  "rag-white": "x === 9",
+                "rag-grey": "rowIndex % 2 === 1",
                 width: 100
             }
         },
