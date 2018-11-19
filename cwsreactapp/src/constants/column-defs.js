@@ -58,6 +58,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-green": "x === 0",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 0"
@@ -72,6 +73,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-lime": "x === 1",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -86,6 +88,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-yellow": "x === 2",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -100,6 +103,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-orange": "x === 3",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -114,6 +118,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-red": "x === 4",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 4",
@@ -129,6 +134,7 @@ export const getImpairmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
              //   "rag-white": "x === 9",
                 "rag-grey": "rowIndex % 2 === 1",
@@ -216,6 +222,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-lime": "x === 1",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -228,6 +235,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-yellow": "x === 2",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -240,6 +248,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-orange": "x === 3",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -252,6 +261,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-red": "x === 4",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 4"
@@ -264,6 +274,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                   //  "rag-white": "x === 9",
                     "rag-grey": "rowIndex % 2 === 1",
@@ -291,6 +302,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-green": "x === 0",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 0"
@@ -303,6 +315,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-lime": "x === 1",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -315,6 +328,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-yellow": "x === 2",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -327,6 +341,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-orange": "x === 3",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -339,6 +354,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-red": "x === 4",
                     "rag-grey": "rowIndex % 2 === 1 && x !== 4"
@@ -351,6 +367,7 @@ export const getCapacityColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                    // "rag-white": "x === 9",
                     "rag-grey": "rowIndex % 2 === 1",
@@ -428,6 +445,7 @@ export const getEnvironmentColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-red": "x === -4",
                     "rag-grey": "rowIndex % 2 === 1 && x !== -4"
@@ -440,6 +458,7 @@ export const getEnvironmentColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-orange": "x === -3",
                     "rag-grey": "rowIndex % 2 === 1 && x !== -3"
@@ -452,6 +471,7 @@ export const getEnvironmentColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-yellow": "x === -2",
                     "rag-grey": "rowIndex % 2 === 1 && x !== -2"
@@ -464,6 +484,7 @@ export const getEnvironmentColumns = () => {
                   applyButton: true,
                   clearButton: true
                 },
+                cellStyle: { 'text-align': 'center' },
                 cellClassRules: {
                     "rag-cream": "x === -1",
                     "rag-grey": "rowIndex % 2 === 1 && x !== -1"
@@ -478,6 +499,7 @@ export const getEnvironmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
                 "rag-blue": "x === 0",
                 "rag-grey": "rowIndex % 2 === 1 && x !== 0"
@@ -494,6 +516,7 @@ export const getEnvironmentColumns = () => {
                       applyButton: true,
                       clearButton: true
                     },
+                    cellStyle: { 'text-align': 'center' },
                     cellClassRules: {
                         "rag-green1": "x === 1",
                         "rag-grey": "rowIndex % 2 === 1 && x !== 1"
@@ -506,6 +529,7 @@ export const getEnvironmentColumns = () => {
                       applyButton: true,
                       clearButton: true
                     },
+                    cellStyle: { 'text-align': 'center' },
                     cellClassRules: {
                         "rag-green2": "x === 2",
                         "rag-grey": "rowIndex % 2 === 1 && x !== 2"
@@ -518,6 +542,7 @@ export const getEnvironmentColumns = () => {
                       applyButton: true,
                       clearButton: true
                     },
+                    cellStyle: { 'text-align': 'center' },
                     cellClassRules: {
                         "rag-green3": "x === 3",
                         "rag-grey": "rowIndex % 2 === 1 && x !== 3"
@@ -530,6 +555,7 @@ export const getEnvironmentColumns = () => {
                       applyButton: true,
                       clearButton: true
                     },
+                    cellStyle: { 'text-align': 'center' },
                     cellClassRules: {
                         "rag-green4": "x === 4",
                         "rag-grey": "rowIndex % 2 === 1 && x !== 4"
@@ -544,6 +570,7 @@ export const getEnvironmentColumns = () => {
               applyButton: true,
               clearButton: true
             },
+            cellStyle: { 'text-align': 'center' },
             cellClassRules: {
               //  "rag-white": "x === 9",
                 "rag-grey": "rowIndex % 2 === 1",
