@@ -206,12 +206,11 @@ class NewFunctionalScorePage extends Component {
           Add New Functional Score
         </button>
 
-        <button onClick={this.getReports}>
+        {/* <button onClick={this.getReports}>
           Refresh
-        </button>
+        </button> */}
 
         <div style={containerStyle} className="ag-fresh">
-        <br />
           <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
             // properties
