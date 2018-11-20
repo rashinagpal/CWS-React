@@ -34,7 +34,7 @@ class NewFunctionalScorePage extends Component {
       rowData: "",
       selectedModal: undefined,
       modalOpen: false,
-      rowSelection: "multiple"
+      rowSelection: "multiple",
     };
   }
 
@@ -43,6 +43,11 @@ class NewFunctionalScorePage extends Component {
     this.columnApi = params.columnApi;
 
     this.gridApi.sizeColumnsToFit();
+  }
+
+  onNewColumnsLoaded = (event) => {
+    console.log('Grid size changed');
+    event.api.sizeColumnsToFit();
   }
 
   componentWillMount() {
@@ -222,6 +227,7 @@ class NewFunctionalScorePage extends Component {
             rowSelection={this.state.rowSelection}
             // events
             onGridReady={this.onGridReady}
+            onNewColumnsLoaded={this.onNewColumnsLoaded}
           />
         </div>
       </div>
