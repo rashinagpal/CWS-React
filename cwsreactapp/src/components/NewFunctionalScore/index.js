@@ -29,7 +29,7 @@ class NewFunctionalScorePage extends Component {
     this.state = {
       patients: [],
       selectedPatient: {},
-      selectedReportCategory: reportCategories[0],
+      selectedReportCategory: {},
       columnDefs: columnDefs.getImpairmentColumns(),
       rowData: "",
       selectedModal: undefined,
