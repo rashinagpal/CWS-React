@@ -14,7 +14,6 @@ import CapacityAndPerformanceModal from '../Modal/CapacityAndPerformanceModal';
 import EnvironmentModal from '../Modal/EnvironmentModal';
 import '../../constants/column-defs';
 import columnDefs from "../../constants/column-defs";
-import Navigation1 from "./Navigation1";
 
 const reportCategories = [
   { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions' },
@@ -31,10 +30,10 @@ class NewFunctionalScorePage extends Component {
       selectedPatient: {},
       selectedReportCategory: {},
       columnDefs: columnDefs.getImpairmentColumns(),
-      rowData: "",
+      rowData: '',
       selectedModal: undefined,
       modalOpen: false,
-      rowSelection: "multiple",
+      rowSelection: 'single',
     };
   }
 
@@ -46,7 +45,6 @@ class NewFunctionalScorePage extends Component {
   }
 
   onNewColumnsLoaded = (event) => {
-    console.log('Grid size changed');
     event.api.sizeColumnsToFit();
   }
 
@@ -107,6 +105,18 @@ class NewFunctionalScorePage extends Component {
     }
   }
 
+  deleteReport(patientId, reportId) {
+    var deleteRef = firebase
+      .database()
+      .ref()
+      .child('patient')
+      .child(patientId)
+      .child('reports')
+      .child(this.state.selectedReportCategory.value)
+      .child("");
+    deleteRef.remove(reportId);
+  }
+
 
   handleChangePatient = selectedPatient => {
     this.setState({ selectedPatient }, () => this.getReports());
@@ -132,6 +142,10 @@ class NewFunctionalScorePage extends Component {
         selectedReportCategory: newState.selectedReportCategory,
         columnDefs: newState.columnDefs
       }, () => this.getReports());
+  }
+
+  handleDeleteRow = () => {
+
   }
 
   handleCloseModal = () => {
@@ -215,8 +229,14 @@ class NewFunctionalScorePage extends Component {
           Refresh
         </button> */}
 
+        <h1>{this.state.selectedReportCategory.value}</h1>
+
+        <div className="button-container">
+          <button>Delete Score</button>
+          <button>Duplicate Score</button>
+        </div>
+
         <div style={containerStyle} className="ag-fresh">
-          <h1>{this.state.selectedReportCategory.value}</h1>
           <AgGridReact
             // properties
             columnDefs={this.state.columnDefs}
