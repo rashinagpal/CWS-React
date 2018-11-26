@@ -64,6 +64,11 @@
   display: block;
 }
 
+.button-container {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
 
 
 .ReactModalPortal > div {
