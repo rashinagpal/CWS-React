@@ -42,7 +42,9 @@ class NewFunctionalScorePage extends Component {
       selectedDomain: domainSubdomain.domainOptionsImpairment[0],
       selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
       optdomain: undefined,
-      optsubdomain: undefined
+      optsubdomain: undefined,
+      careprovider: [],
+      selectedUser: {}
     };
   }
 
@@ -60,6 +62,7 @@ class NewFunctionalScorePage extends Component {
 
   componentWillMount() {
     this.getPatients();
+    this.getcareProvider();
   }
 
   getPatients() {
@@ -75,6 +78,23 @@ class NewFunctionalScorePage extends Component {
       };
       this.setState(prevState => ({
         patients: [...prevState.patients, element]
+      }));
+    });
+  }
+
+  getcareProvider() {
+    var rootRef = firebase
+      .database()
+      .ref()
+      .child("users");
+
+    rootRef.on("child_added", snapshot => {
+      let provider = {
+        value: snapshot.val().email.split('@')[0],
+        label: snapshot.val().email.split('@')[0]
+      };
+      this.setState(prevState => ({
+        careprovider: [...prevState.careprovider, provider]
       }));
     });
   }
@@ -154,6 +174,10 @@ handleChangeDomain = selectedDomain => {
 
 handleChangeSubDomain = selectedDomain => {
     this.setState({ selectedSubDomain: selectedDomain }, () => this.getReports());
+};
+
+handleChangeUser = selectedUser => {
+  this.setState({ selectedUser }, () => this.getReports());
 };
 
 
@@ -304,6 +328,13 @@ handleChangeSubDomain = selectedDomain => {
           value={this.state.selectedSubDomain.querySelector}
           onChange={this.handleChangeSubDomain}
           options={optsubdomain}
+        />
+        <b>Select CareProvider</b>
+        <Select
+          className="dark-theme"
+          options={this.state.careprovider}
+          value={this.state.selectedUser.querySelector}
+          onChange={this.handleChangeUser}
         />
 
         <div style={containerStyle} className="ag-fresh">
