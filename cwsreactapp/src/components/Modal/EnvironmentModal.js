@@ -72,7 +72,7 @@ export default class EnvironmentModal extends Component {
         this.setState({ patientVal: newVal });
     };
     handleChange1 = selectedOption => {
-        this.setState({ selectedOption });
+        this.setState({ selectedOption, selectedOption2: null });
     };
 
     handleChange2 = selectedOption2 => {
