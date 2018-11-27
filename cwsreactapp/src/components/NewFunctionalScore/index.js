@@ -13,7 +13,11 @@ import ImpairmentModal from '../Modal/ImpairmentModal';
 import CapacityAndPerformanceModal from '../Modal/CapacityAndPerformanceModal';
 import EnvironmentModal from '../Modal/EnvironmentModal';
 import '../../constants/column-defs';
+import '../../constants/domainSubdomain';
 import columnDefs from "../../constants/column-defs";
+import * as domainSubdomain from '../../constants/domainSubdomain';
+import Navigation1 from "./Navigation1";
+import "../.././styles.css";
 
 const reportCategories = [
   { value: 'Impairment of Body Functions', label: 'Impairment of Body Functions' },
@@ -33,7 +37,14 @@ class NewFunctionalScorePage extends Component {
       rowData: '',
       selectedModal: undefined,
       modalOpen: false,
-      rowSelection: 'single',
+      rowSelection: "multiple",
+      //filtering
+      selectedDomain: domainSubdomain.domainOptionsImpairment[0],
+      selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
+      optdomain: undefined,
+      optsubdomain: undefined,
+      careprovider: [{ value: 'All', label: 'All' }],
+      selectedUser: {}
     };
   }
 
@@ -50,6 +61,7 @@ class NewFunctionalScorePage extends Component {
 
   componentWillMount() {
     this.getPatients();
+    this.getcareProvider();
   }
 
   getPatients() {
@@ -65,6 +77,23 @@ class NewFunctionalScorePage extends Component {
       };
       this.setState(prevState => ({
         patients: [...prevState.patients, element]
+      }));
+    });
+  }
+
+  getcareProvider() {
+    var rootRef = firebase
+      .database()
+      .ref()
+      .child("users");
+
+    rootRef.on("child_added", snapshot => {
+      let provider = {
+        value: snapshot.val().email.split('@')[0],
+        label: snapshot.val().email.split('@')[0]
+      };
+      this.setState(prevState => ({
+        careprovider: [...prevState.careprovider, provider]
       }));
     });
   }
@@ -86,7 +115,9 @@ class NewFunctionalScorePage extends Component {
         .child(this.state.selectedReportCategory.value);
 
       let data = [];
-
+      let Domain = this.state.selectedDomain.value;
+      let SubDomain = this.state.selectedSubDomain.value;
+      if(this.state.selectedDomain.value==="All"){
       rootRef.on("child_added", snapshot => {
         // Store all the labels in array
         data.push(snapshot.val());
@@ -99,11 +130,54 @@ class NewFunctionalScorePage extends Component {
           return a.id > b.id ? 1 : -1;
         });
       });
+    }
+    else if((this.state.selectedDomain.value!=="All")&&(this.state.selectedSubDomain.value==="All"))
+    {
+      rootRef.orderByChild("domain").equalTo(Domain).on("child_added", snapshot => {
+         // Store all the labels in array
+         data.push(snapshot.val());
+         // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+         data.sort((a, b) => {
+           if (a.id === b.id) {
+             // Sort by date when they are part of the same subdomain
+             return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+           }
+           return a.id > b.id ? 1 : -1;
+         });
+       });
+     }
+     else if((this.state.selectedDomain.value!=="All")&&(this.state.selectedSubDomain.value!=="All"))
+    {
+      rootRef.orderByChild("subDomain").equalTo(SubDomain).on("child_added", snapshot => {
+         // Store all the labels in array
+         data.push(snapshot.val());
+         // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+         data.sort((a, b) => {
+           if (a.id === b.id) {
+             // Sort by date when they are part of the same subdomain
+             return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+           }
+           return a.id > b.id ? 1 : -1;
+         });
+       });
+     }
+      
       this.setState({
         rowData: data
       });
     }
   }
+handleChangeDomain = selectedDomain => {
+    this.setState({ selectedDomain }, () => this.getReports());
+};
+
+handleChangeSubDomain = selectedDomain => {
+    this.setState({ selectedSubDomain: selectedDomain }, () => this.getReports());
+};
+
+handleChangeUser = selectedUser => {
+  this.setState({ selectedUser }, () => this.getReports());
+};
 
   deleteReport(patientId, reportId) {
     var deleteRef = firebase
@@ -125,7 +199,7 @@ class NewFunctionalScorePage extends Component {
   handleChangeCategory = selectedReportCategory => {
     let newState = {
       selectedReportCategory,
-      columnDefs: columnDefs.getImpairmentColumns()
+      columnDefs: columnDefs.getImpairmentColumns(),
     };
 
     if (selectedReportCategory.value === reportCategories[0].value) {
@@ -140,7 +214,9 @@ class NewFunctionalScorePage extends Component {
     
     this.setState({ 
         selectedReportCategory: newState.selectedReportCategory,
-        columnDefs: newState.columnDefs
+        columnDefs: newState.columnDefs,
+        selectedDomain: domainSubdomain.domainOptionsImpairment[0],
+        selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
       }, () => this.getReports());
   }
 
@@ -156,17 +232,38 @@ class NewFunctionalScorePage extends Component {
     this.setState(() => ({ modalOpen: true }))
   }
 
-  // onRemoveSelected() {
-  //   var selectedData = this.gridApi.getSelectedRows();
-  //   var res = this.gridApi.updateRowData({ remove: selectedData });
-  //   printResult(res);
-  // }
-
   render() {
     let containerStyle = {
       height: 500,
       width: 1250
     };
+  let filteredOptionsImp;
+  if (this.state.selectedDomain) {
+    filteredOptionsImp = domainSubdomain.subdomainOptionsImpairment.filter(
+          o => o.link === this.state.selectedDomain.value
+      );
+  }
+  let filteredOptionsCapPer;
+  if (this.state.selectedDomain) {
+    filteredOptionsCapPer = domainSubdomain.subdomainOptionsCapPer.filter(
+          o => o.link === this.state.selectedDomain.value
+      );
+  }
+  
+
+  if (this.state.selectedReportCategory.value==='Impairment of Body Functions'){
+   var optdomain = domainSubdomain.domainOptionsImpairment;
+   var optsubdomain = filteredOptionsImp;
+  }
+  else if (this.state.selectedReportCategory.value==='Capacity and Performance'){
+  var optdomain = domainSubdomain.domainOptionsCapPer;
+  var optsubdomain = filteredOptionsCapPer;
+  }
+  else if (this.state.selectedReportCategory.value==='Environment'){
+    var optdomain = domainSubdomain.domainOptionsEnv;
+    }
+
+
 
     return (
       <div>
@@ -229,12 +326,33 @@ class NewFunctionalScorePage extends Component {
           Refresh
         </button> */}
 
-        <h1>{this.state.selectedReportCategory.value}</h1>
-
-        <div className="button-container">
-          <button>Delete Score</button>
-          <button>Duplicate Score</button>
-        </div>
+        <br/>
+        <br/>
+        
+        <b>Filtering</b> <br/>
+        <b>Select Domain</b>
+        <Select
+          className="dark-theme"
+          value={this.state.selectedDomain.querySelector}
+          onChange={this.handleChangeDomain}
+          options={optdomain}
+        />
+        
+       
+        <b>Select Subdomain</b>
+        <Select
+          className="dark-theme"
+          value={this.state.selectedSubDomain.querySelector}
+          onChange={this.handleChangeSubDomain}
+          options={optsubdomain}
+        />
+        <b>Select CareProvider</b>
+        <Select
+          className="dark-theme"
+          options={this.state.careprovider}
+          value={this.state.selectedUser.querySelector}
+          onChange={this.handleChangeUser}
+        />
 
         <div style={containerStyle} className="ag-fresh">
           <AgGridReact
