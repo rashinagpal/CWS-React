@@ -34,6 +34,7 @@ class NewFunctionalScorePage extends Component {
       selectedPatient: {},
       selectedReportCategory: {},
       columnDefs: columnDefs.getImpairmentColumns(),
+      unfilteredRowData: '',
       rowData: '',
       selectedModal: undefined,
       modalOpen: false,
@@ -44,7 +45,7 @@ class NewFunctionalScorePage extends Component {
       optdomain: undefined,
       optsubdomain: undefined,
       careProvider: [{ value: 'All', label: 'All' }],
-      selectedCareProvider: undefined
+      selectedCareProvider: undefined,
     };
   }
 
@@ -62,6 +63,7 @@ class NewFunctionalScorePage extends Component {
   componentWillMount() {
     this.getPatients();
     this.getCareProvider();
+    this.setState({ selectedCareProvider: this.state.careProvider[0]});
   }
 
   getPatients() {
@@ -115,66 +117,38 @@ class NewFunctionalScorePage extends Component {
         .child(this.state.selectedReportCategory.value);
 
       let data = [];
-      let Domain = this.state.selectedDomain.value;
-      let SubDomain = this.state.selectedSubDomain.value;
-      if (this.state.selectedDomain.value === "All") {
-        rootRef.on("child_added", snapshot => {
-          // Store all the labels in array
-          data.push(snapshot.val());
-          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-          data.sort((a, b) => {
-            if (a.id === b.id) {
-              // Sort by date when they are part of the same subdomain
-              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-            }
-            return a.id > b.id ? 1 : -1;
-          });
-        });
-      }
-      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value === "All")) {
-        rootRef.orderByChild("domain").equalTo(Domain).on("child_added", snapshot => {
-          // Store all the labels in array
-          data.push(snapshot.val());
-          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-          data.sort((a, b) => {
-            if (a.id === b.id) {
-              // Sort by date when they are part of the same subdomain
-              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-            }
-            return a.id > b.id ? 1 : -1;
-          });
-        });
-      }
-      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value !== "All")) {
-        rootRef.orderByChild("subDomain").equalTo(SubDomain).on("child_added", snapshot => {
-          // Store all the labels in array
-          data.push(snapshot.val());
-          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-          data.sort((a, b) => {
-            if (a.id === b.id) {
-              // Sort by date when they are part of the same subdomain
-              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-            }
-            return a.id > b.id ? 1 : -1;
-          });
-        });
-      }
 
+      rootRef.on("child_added", snapshot => {
+        // Store all the labels in array
+        data.push(snapshot.val());
+        // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+        data.sort((a, b) => {
+          if (a.id === b.id) {
+            // Sort by date when they are part of the same subdomain
+            return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+          }
+          return a.id > b.id ? 1 : -1;
+        });
+      });
       this.setState({
+        unfilteredRowData: data,
         rowData: data
       });
     }
   }
+
   handleChangeDomain = selectedDomain => {
-    this.setState({ selectedDomain }, () => this.getReports());
+    const filteredRowData = this.state.rowData.filter((score) => score.domain === selectedDomain.label);
+    console.log(filteredRowData);
+    this.setState({ selectedDomain, rowData: filteredRowData});
   };
 
   handleChangeSubDomain = selectedDomain => {
     this.setState({ selectedSubDomain: selectedDomain }, () => this.getReports());
   };
 
-  handleChangeUser = selectedUser => {
-    this.setState({ selectedUser }, () => this.getReports());
+  handleChangeCareProvider = selectedCareProvider => {
+    this.setState({ selectedCareProvider });
   };
 
   deleteReport(patientId, reportId) {
@@ -348,8 +322,8 @@ class NewFunctionalScorePage extends Component {
         <Select
           className="dark-theme"
           options={this.state.careProvider}
-          value={this.state.selectedUser}
-          onChange={this.handleChangeUser}
+          value={this.state.selectedCareProvider}
+          onChange={this.handle}
         />
 
         <div style={containerStyle} className="ag-fresh">
