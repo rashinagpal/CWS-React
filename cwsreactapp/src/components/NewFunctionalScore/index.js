@@ -43,8 +43,8 @@ class NewFunctionalScorePage extends Component {
       selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
       optdomain: undefined,
       optsubdomain: undefined,
-      careprovider: [{ value: 'All', label: 'All' }],
-      selectedUser: {}
+      careProvider: [{ value: 'All', label: 'All' }],
+      selectedCareProvider: undefined
     };
   }
 
@@ -61,7 +61,7 @@ class NewFunctionalScorePage extends Component {
 
   componentWillMount() {
     this.getPatients();
-    this.getcareProvider();
+    this.getCareProvider();
   }
 
   getPatients() {
@@ -81,7 +81,7 @@ class NewFunctionalScorePage extends Component {
     });
   }
 
-  getcareProvider() {
+  getCareProvider() {
     var rootRef = firebase
       .database()
       .ref()
@@ -93,7 +93,7 @@ class NewFunctionalScorePage extends Component {
         label: snapshot.val().email.split('@')[0]
       };
       this.setState(prevState => ({
-        careprovider: [...prevState.careprovider, provider]
+        careProvider: [...prevState.careProvider, provider]
       }));
     });
   }
@@ -117,67 +117,65 @@ class NewFunctionalScorePage extends Component {
       let data = [];
       let Domain = this.state.selectedDomain.value;
       let SubDomain = this.state.selectedSubDomain.value;
-      if(this.state.selectedDomain.value==="All"){
-      rootRef.on("child_added", snapshot => {
-        // Store all the labels in array
-        data.push(snapshot.val());
-        // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-        data.sort((a, b) => {
-          if (a.id === b.id) {
-            // Sort by date when they are part of the same subdomain
-            return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-          }
-          return a.id > b.id ? 1 : -1;
+      if (this.state.selectedDomain.value === "All") {
+        rootRef.on("child_added", snapshot => {
+          // Store all the labels in array
+          data.push(snapshot.val());
+          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+          data.sort((a, b) => {
+            if (a.id === b.id) {
+              // Sort by date when they are part of the same subdomain
+              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+            }
+            return a.id > b.id ? 1 : -1;
+          });
         });
-      });
-    }
-    else if((this.state.selectedDomain.value!=="All")&&(this.state.selectedSubDomain.value==="All"))
-    {
-      rootRef.orderByChild("domain").equalTo(Domain).on("child_added", snapshot => {
-         // Store all the labels in array
-         data.push(snapshot.val());
-         // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-         data.sort((a, b) => {
-           if (a.id === b.id) {
-             // Sort by date when they are part of the same subdomain
-             return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-           }
-           return a.id > b.id ? 1 : -1;
-         });
-       });
-     }
-     else if((this.state.selectedDomain.value!=="All")&&(this.state.selectedSubDomain.value!=="All"))
-    {
-      rootRef.orderByChild("subDomain").equalTo(SubDomain).on("child_added", snapshot => {
-         // Store all the labels in array
-         data.push(snapshot.val());
-         // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
-         data.sort((a, b) => {
-           if (a.id === b.id) {
-             // Sort by date when they are part of the same subdomain
-             return new Date(b.assessmentDate) - new Date(a.assessmentDate);
-           }
-           return a.id > b.id ? 1 : -1;
-         });
-       });
-     }
-      
+      }
+      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value === "All")) {
+        rootRef.orderByChild("domain").equalTo(Domain).on("child_added", snapshot => {
+          // Store all the labels in array
+          data.push(snapshot.val());
+          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+          data.sort((a, b) => {
+            if (a.id === b.id) {
+              // Sort by date when they are part of the same subdomain
+              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+            }
+            return a.id > b.id ? 1 : -1;
+          });
+        });
+      }
+      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value !== "All")) {
+        rootRef.orderByChild("subDomain").equalTo(SubDomain).on("child_added", snapshot => {
+          // Store all the labels in array
+          data.push(snapshot.val());
+          // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+          data.sort((a, b) => {
+            if (a.id === b.id) {
+              // Sort by date when they are part of the same subdomain
+              return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+            }
+            return a.id > b.id ? 1 : -1;
+          });
+        });
+      }
+
       this.setState({
         rowData: data
       });
     }
   }
-handleChangeDomain = selectedDomain => {
+  handleChangeDomain = selectedDomain => {
     this.setState({ selectedDomain }, () => this.getReports());
-};
+  };
 
-handleChangeSubDomain = selectedDomain => {
+  handleChangeSubDomain = selectedDomain => {
     this.setState({ selectedSubDomain: selectedDomain }, () => this.getReports());
-};
+  };
 
-handleChangeUser = selectedUser => {
-  this.setState({ selectedUser }, () => this.getReports());
-};
+  handleChangeUser = selectedUser => {
+    this.setState({ selectedUser }, () => this.getReports());
+  };
 
   deleteReport(patientId, reportId) {
     var deleteRef = firebase
@@ -211,13 +209,13 @@ handleChangeUser = selectedUser => {
     else if (selectedReportCategory.value === reportCategories[2].value) {
       newState.columnDefs = columnDefs.getEnvironmentColumns();
     }
-    
-    this.setState({ 
-        selectedReportCategory: newState.selectedReportCategory,
-        columnDefs: newState.columnDefs,
-        selectedDomain: domainSubdomain.domainOptionsImpairment[0],
-        selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
-      }, () => this.getReports());
+
+    this.setState({
+      selectedReportCategory: newState.selectedReportCategory,
+      columnDefs: newState.columnDefs,
+      selectedDomain: domainSubdomain.domainOptionsImpairment[0],
+      selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
+    }, () => this.getReports());
   }
 
   handleDeleteRow = () => {
@@ -237,30 +235,30 @@ handleChangeUser = selectedUser => {
       height: 500,
       width: 1250
     };
-  let filteredOptionsImp;
-  if (this.state.selectedDomain) {
-    filteredOptionsImp = domainSubdomain.subdomainOptionsImpairment.filter(
-          o => o.link === this.state.selectedDomain.value
+    let filteredOptionsImp;
+    if (this.state.selectedDomain) {
+      filteredOptionsImp = domainSubdomain.subdomainOptionsImpairment.filter(
+        o => o.link === this.state.selectedDomain.value
       );
-  }
-  let filteredOptionsCapPer;
-  if (this.state.selectedDomain) {
-    filteredOptionsCapPer = domainSubdomain.subdomainOptionsCapPer.filter(
-          o => o.link === this.state.selectedDomain.value
+    }
+    let filteredOptionsCapPer;
+    if (this.state.selectedDomain) {
+      filteredOptionsCapPer = domainSubdomain.subdomainOptionsCapPer.filter(
+        o => o.link === this.state.selectedDomain.value
       );
-  }
-  
+    }
 
-  if (this.state.selectedReportCategory.value==='Impairment of Body Functions'){
-   var optdomain = domainSubdomain.domainOptionsImpairment;
-   var optsubdomain = filteredOptionsImp;
-  }
-  else if (this.state.selectedReportCategory.value==='Capacity and Performance'){
-  var optdomain = domainSubdomain.domainOptionsCapPer;
-  var optsubdomain = filteredOptionsCapPer;
-  }
-  else if (this.state.selectedReportCategory.value==='Environment'){
-    var optdomain = domainSubdomain.domainOptionsEnv;
+
+    if (this.state.selectedReportCategory.value === 'Impairment of Body Functions') {
+      var optdomain = domainSubdomain.domainOptionsImpairment;
+      var optsubdomain = filteredOptionsImp;
+    }
+    else if (this.state.selectedReportCategory.value === 'Capacity and Performance') {
+      var optdomain = domainSubdomain.domainOptionsCapPer;
+      var optsubdomain = filteredOptionsCapPer;
+    }
+    else if (this.state.selectedReportCategory.value === 'Environment') {
+      var optdomain = domainSubdomain.domainOptionsEnv;
     }
 
 
@@ -269,7 +267,7 @@ handleChangeUser = selectedUser => {
       <div>
         <b>Select Patient</b>
         <ImpairmentModal
-          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[0].value }
+          selectedModal={this.state.modalOpen && this.state.selectedReportCategory.value == reportCategories[0].value}
           handleCloseModal={this.handleCloseModal}
           sessionStore={this.props.sessionStore}
           patient={this.state.selectedPatient.value}
@@ -293,9 +291,9 @@ handleChangeUser = selectedUser => {
           patient={this.state.selectedPatient.value}
           scoreCategory={this.state.selectedReportCategory.value}
           handleRefresh={this.getReports}
-          rowData={this.state.rowData} 
+          rowData={this.state.rowData}
         />
-        
+
         <Select
           className="m-2"
           options={this.state.patients}
@@ -315,7 +313,7 @@ handleChangeUser = selectedUser => {
 
         <br />
 
-        <button 
+        <button
           onClick={this.handleOpenModal}
           disabled={!!!(this.state.selectedPatient.value && this.state.selectedReportCategory.value)}
         >
@@ -326,31 +324,31 @@ handleChangeUser = selectedUser => {
           Refresh
         </button> */}
 
-        <br/>
-        <br/>
-        
-        <b>Filtering</b> <br/>
+        <br />
+        <br />
+
+        <b>Filtering</b> <br />
         <b>Select Domain</b>
         <Select
           className="dark-theme"
-          value={this.state.selectedDomain.querySelector}
+          value={this.state.selectedDomain}
           onChange={this.handleChangeDomain}
           options={optdomain}
         />
-        
-       
+
+
         <b>Select Subdomain</b>
         <Select
           className="dark-theme"
-          value={this.state.selectedSubDomain.querySelector}
+          value={this.state.selectedSubDomain}
           onChange={this.handleChangeSubDomain}
           options={optsubdomain}
         />
-        <b>Select CareProvider</b>
+        <b>Select Care Provider</b>
         <Select
           className="dark-theme"
-          options={this.state.careprovider}
-          value={this.state.selectedUser.querySelector}
+          options={this.state.careProvider}
+          value={this.state.selectedUser}
           onChange={this.handleChangeUser}
         />
 
