@@ -34,7 +34,7 @@ class NewFunctionalScorePage extends Component {
       selectedPatient: {},
       selectedReportCategory: {},
       columnDefs: columnDefs.getImpairmentColumns(),
-      rowData: '',
+      rowData: "",
       selectedModal: undefined,
       modalOpen: false,
       rowSelection: "multiple",
@@ -44,7 +44,7 @@ class NewFunctionalScorePage extends Component {
       optdomain: undefined,
       optsubdomain: undefined,
       careProvider: [{ value: 'All', label: 'All' }],
-      selectedCareProvider: undefined
+      selectedCareProvider: 'All',
     };
   }
 
@@ -61,7 +61,8 @@ class NewFunctionalScorePage extends Component {
 
   componentWillMount() {
     this.getPatients();
-    this.getCareProvider();
+    this.getcareProvider();
+    this.setState({ selectedCareProvider: this.state.careProvider[0]});
   }
 
   getPatients() {
@@ -81,7 +82,7 @@ class NewFunctionalScorePage extends Component {
     });
   }
 
-  getCareProvider() {
+  getcareProvider() {
     var rootRef = firebase
       .database()
       .ref()
@@ -117,6 +118,7 @@ class NewFunctionalScorePage extends Component {
       let data = [];
       let Domain = this.state.selectedDomain.value;
       let SubDomain = this.state.selectedSubDomain.value;
+      let CareProvider = this.state.selectedCareProvider.value;
       if (this.state.selectedDomain.value === "All") {
         rootRef.on("child_added", snapshot => {
           // Store all the labels in array
@@ -131,7 +133,8 @@ class NewFunctionalScorePage extends Component {
           });
         });
       }
-      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value === "All")) {
+    else if((this.state.selectedDomain.value!=="All")&&(this.state.selectedSubDomain.value==="All")&&(this.state.selectedCareProvider.value==="All"))
+    {
         rootRef.orderByChild("domain").equalTo(Domain).on("child_added", snapshot => {
           // Store all the labels in array
           data.push(snapshot.val());
@@ -145,7 +148,10 @@ class NewFunctionalScorePage extends Component {
           });
         });
       }
-      else if ((this.state.selectedDomain.value !== "All") && (this.state.selectedSubDomain.value !== "All")) {
+     else if((this.state.selectedDomain.value!=="All")
+     &&(this.state.selectedSubDomain.value!=="All")
+     &&(this.state.selectedCareProvider.value==="All"))
+    {
         rootRef.orderByChild("subDomain").equalTo(SubDomain).on("child_added", snapshot => {
           // Store all the labels in array
           data.push(snapshot.val());
@@ -159,7 +165,25 @@ class NewFunctionalScorePage extends Component {
           });
         });
       }
+     else if((this.state.selectedDomain.value!=="All")
+     &&(this.state.selectedSubDomain.value!=="All")
+     &&(this.state.selectedCareProvider.value!=="All"))
+    {
+      rootRef.orderByChild("careProvider").equalTo(CareProvider).on("child_added", snapshot => {
+         // Store all the labels in array
+         data.push(snapshot.val());
+         // TODO: Sorting every time an item is added, not very efficient. Upgrade if necessary later
+         data.sort((a, b) => {
+           if (a.id === b.id) {
+             // Sort by date when they are part of the same subdomain
+             return new Date(b.assessmentDate) - new Date(a.assessmentDate);
+           }
+           return a.id > b.id ? 1 : -1;
+         });
+       });
+     }
 
+      
       this.setState({
         rowData: data
       });
@@ -173,9 +197,12 @@ class NewFunctionalScorePage extends Component {
     this.setState({ selectedSubDomain: selectedDomain }, () => this.getReports());
   };
 
-  handleChangeUser = selectedUser => {
-    this.setState({ selectedUser }, () => this.getReports());
-  };
+handleChangeUser = selectedCareProvider => {
+  this.setState({ selectedCareProvider }, () => this.getReports());
+  // const filteredRowData = this.state.rowData.filter((score) => score.careProvider === selectedCareProvider.label);
+  // console.log(filteredRowData);
+  // this.setState({ selectedCareProvider, rowData: filteredRowData});
+};
 
   deleteReport(patientId, reportId) {
     var deleteRef = firebase
@@ -197,7 +224,7 @@ class NewFunctionalScorePage extends Component {
   handleChangeCategory = selectedReportCategory => {
     let newState = {
       selectedReportCategory,
-      columnDefs: columnDefs.getImpairmentColumns(),
+      columnDefs: columnDefs.getImpairmentColumns()
     };
 
     if (selectedReportCategory.value === reportCategories[0].value) {
@@ -215,11 +242,8 @@ class NewFunctionalScorePage extends Component {
       columnDefs: newState.columnDefs,
       selectedDomain: domainSubdomain.domainOptionsImpairment[0],
       selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
-    }, () => this.getReports());
-  }
-
-  handleDeleteRow = () => {
-
+      selectedCareProvider: this.state.careProvider[0],
+      }, () => this.getReports());
   }
 
   handleCloseModal = () => {
@@ -344,11 +368,11 @@ class NewFunctionalScorePage extends Component {
           onChange={this.handleChangeSubDomain}
           options={optsubdomain}
         />
-        <b>Select Care Provider</b>
+        <b>Select CareProvider</b>
         <Select
           className="dark-theme"
           options={this.state.careProvider}
-          value={this.state.selectedUser}
+          value={this.state.selectedCareProvider}
           onChange={this.handleChangeUser}
         />
 
