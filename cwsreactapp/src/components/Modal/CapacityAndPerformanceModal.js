@@ -22,7 +22,8 @@ export default class CapacityAndPerformanceModal extends Component {
             selectedScore_c: undefined,
             selectedScore_p: undefined,
             date: moment(),
-            c: "",
+            capacityComment: "",
+            performanceComment: ""
         };
     }
 
@@ -100,8 +101,12 @@ export default class CapacityAndPerformanceModal extends Component {
         this.setState({ selectedScore_p });
     };
 
-    handleChange5 = e => {
-        this.setState({ c: e.target.value });
+    handleChangeCapacityComment = e => {
+        this.setState({ capacityComment: e.target.value });
+    };
+
+    handleChangePerformanceComment = e => {
+        this.setState({ performanceComment: e.target.value });
     };
 
     handleDateChange = date => {
@@ -122,7 +127,8 @@ export default class CapacityAndPerformanceModal extends Component {
                 careProvider: this.getCurrentUser(),
                 domain: this.state.selectedOption.label,
                 subDomain: this.state.selectedOption2.label,
-                capacitycomment: this.state.c,
+                capacitycomment: this.state.capacityComment,
+                performancecomment: this.state.performanceComment,
                 assessmentDate: this.state.date.format("DD-MMM-YY"),
                 id: this.state.selectedOption2.id,
 
@@ -161,7 +167,8 @@ export default class CapacityAndPerformanceModal extends Component {
         this.setState({
             selectedScore_c: undefined,
             selectedScore_p: undefined,
-            c: "",
+            capacityComment: "",
+            performanceComment: "",
             showError: false
         });
 
@@ -237,6 +244,17 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
+                        <b>Capacity Comment</b>
+                    </p>
+
+                    <FormControl
+                        type="text"
+                        placeholder="Enter comment"
+                        onChange={this.handleChangeCapacityComment}
+                        value={this.state.capacityComment}
+                    />
+
+                    <p className="m-2">
                         <span className="required">* </span>
                         <b>Select Functional Score - Performance</b>
                     </p>
@@ -250,6 +268,17 @@ export default class CapacityAndPerformanceModal extends Component {
                     />
 
                     <p className="m-2">
+                        <b>Performance Comment</b>
+                    </p>
+
+                    <FormControl
+                        type="text"
+                        placeholder="Enter comment"
+                        onChange={this.handleChangePerformanceComment}
+                        value={this.state.performanceComment}
+                    />
+
+                    <p className="m-2">
                         <b>Select Assessment Date</b>
                     </p>
                     <DatePicker
@@ -257,17 +286,6 @@ export default class CapacityAndPerformanceModal extends Component {
                         name="form-field-name"
                         selected={this.state.date}
                         onChange={this.handleDateChange}
-                    />
-
-                    <p className="m-2">
-                        <b>Comment</b>
-                    </p>
-
-                    <FormControl
-                        type="text"
-                        placeholder="Enter comment"
-                        onChange={this.handleChange5}
-                        value={this.state.c}
                     />
 
                     <br />

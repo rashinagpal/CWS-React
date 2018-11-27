@@ -218,16 +218,6 @@ export default class EnvironmentModal extends Component {
                     />
 
                     <p className="m-2">
-                        <b>Select Assessment Date</b>
-                    </p>
-                    <DatePicker
-                        className="m-2"
-                        name="form-field-name"
-                        selected={this.state.date}
-                        onChange={this.handleDateChange}
-                    />
-
-                    <p className="m-2">
                         <b>Comment</b>
                     </p>
 
@@ -236,6 +226,16 @@ export default class EnvironmentModal extends Component {
                         placeholder="Enter comment"
                         onChange={this.handleChange4}
                         value={this.state.c}
+                    />
+
+                    <p className="m-2">
+                        <b>Select Assessment Date</b>
+                    </p>
+                    <DatePicker
+                        className="m-2"
+                        name="form-field-name"
+                        selected={this.state.date}
+                        onChange={this.handleDateChange}
                     />
 
                     <br />
