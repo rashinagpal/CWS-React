@@ -13,9 +13,7 @@ import ImpairmentModal from '../Modal/ImpairmentModal';
 import CapacityAndPerformanceModal from '../Modal/CapacityAndPerformanceModal';
 import EnvironmentModal from '../Modal/EnvironmentModal';
 import '../../constants/column-defs';
-import '../../constants/domainSubdomain';
 import columnDefs from "../../constants/column-defs";
-import * as domainSubdomain from '../../constants/domainSubdomain';
 import Navigation1 from "./Navigation1";
 import "../.././styles.css";
 
@@ -39,10 +37,18 @@ class NewFunctionalScorePage extends Component {
       modalOpen: false,
       rowSelection: "multiple",
       //filtering
-      selectedDomain: domainSubdomain.domainOptionsImpairment[0],
-      selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
-      optdomain: undefined,
-      optsubdomain: undefined,
+      //selectedDomain: domainSubdomain.domainOptionsImpairment[0],
+      //selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
+      selectedDomain: 'All',
+      selectedSubDomain: 'All',
+      optionsDomainImp: [{ value: 'All', label: 'All' }],
+      optionsSubDomainImp: [{ value: 'All', label: 'All' }],
+      optionsDomainCapPer: [{ value: 'All', label: 'All' }],
+      optionsSubDomainCapPer: [{ value: 'All', label: 'All' }],
+      optionsDomainEnv: [{ value: 'All', label: 'All' }],
+      optionsSubDomainEnv: [{ value: 'All', label: 'All' }],
+      // optdomain: undefined,
+      // optsubdomain: undefined,
       careProvider: [{ value: 'All', label: 'All' }],
       selectedCareProvider: 'All',
     };
@@ -62,7 +68,13 @@ class NewFunctionalScorePage extends Component {
   componentWillMount() {
     this.getPatients();
     this.getcareProvider();
-    this.setState({ selectedCareProvider: this.state.careProvider[0]});
+    this.getDropdownDataImpairment();
+    this.getDropdownDataCapPer();
+    this.getDropdownDataEnv();
+    this.setState({ selectedDomain: this.state.optionsDomainImp[0],
+       selectedSubDomain: this.state.optionsSubDomainImp[0],
+       selectedCareProvider: this.state.careProvider[0],
+      });
   }
 
   getPatients() {
@@ -96,6 +108,84 @@ class NewFunctionalScorePage extends Component {
       this.setState(prevState => ({
         careProvider: [...prevState.careProvider, provider]
       }));
+    });
+  }
+
+  getDropdownDataImpairment() {
+    var ref = firebase.database().ref();
+    let rootRef = ref.child("impairment_of_body_functions").child("domain");
+    let rootRef2 = ref.child("impairment_of_body_functions").child("subDomain");
+    rootRef.on("child_added", snapshot => {
+        let elementImp = {
+            label: snapshot.val().label,
+            value: snapshot.val().value
+        };
+        this.setState(prevState => ({
+            optionsDomainImp: [...prevState.optionsDomainImp, elementImp]
+        }));
+    });
+    rootRef2.on("child_added", snapshot => {
+        let elementImp2 = {
+            label: snapshot.val().label,
+            link: snapshot.val().link,
+            value: snapshot.val().value,
+            id: snapshot.val().id
+        };
+        this.setState(prevState => ({
+          optionsSubDomainImp: [...prevState.optionsSubDomainImp, elementImp2]
+        }));
+    });
+  }
+
+  getDropdownDataCapPer() {
+    var ref = firebase.database().ref();
+    let rootRefCapPer = ref.child("capacity_and_performance").child("domain");
+    let rootRefCapPer2 = ref.child("capacity_and_performance").child("subDomain");
+    rootRefCapPer.on("child_added", snapshot => {
+        let elementCapPer = {
+            label: snapshot.val().label,
+            value: snapshot.val().value
+        };
+        this.setState(prevState => ({
+            optionsDomainCapPer: [...prevState.optionsDomainCapPer, elementCapPer]
+        }));
+    });
+    rootRefCapPer2.on("child_added", snapshot => {
+        let elementCapPer2 = {
+            label: snapshot.val().label,
+            link: snapshot.val().link,
+            value: snapshot.val().value,
+            id: snapshot.val().id
+        };
+        this.setState(prevState => ({
+          optionsSubDomainCapPer: [...prevState.optionsSubDomainCapPer, elementCapPer2]
+        }));
+    });
+  }
+
+  getDropdownDataEnv() {
+    var ref = firebase.database().ref();
+    let rootRefEnv = ref.child("environment").child("domain");
+    let rootRefEnv2 = ref.child("environment").child("subDomain");
+    rootRefEnv.on("child_added", snapshot => {
+        let elementEnv = {
+            label: snapshot.val().label,
+            value: snapshot.val().value
+        };
+        this.setState(prevState => ({
+            optionsDomainEnv: [...prevState.optionsDomainEnv, elementEnv]
+        }));
+    });
+    rootRefEnv2.on("child_added", snapshot => {
+        let elementEnv2 = {
+            label: snapshot.val().label,
+            link: snapshot.val().link,
+            value: snapshot.val().value,
+            id: snapshot.val().id
+        };
+        this.setState(prevState => ({
+          optionsSubDomainEnv: [...prevState.optionsSubDomainEnv, elementEnv2]
+        }));
     });
   }
 
@@ -185,8 +275,6 @@ class NewFunctionalScorePage extends Component {
          });
        });
      }
-
-      
       this.setState({
         rowData: data
       });
@@ -240,11 +328,13 @@ handleChangeUser = selectedCareProvider => {
       newState.columnDefs = columnDefs.getEnvironmentColumns();
     }
 
-    this.setState({
+    this.setState({ 
       selectedReportCategory: newState.selectedReportCategory,
       columnDefs: newState.columnDefs,
-      selectedDomain: domainSubdomain.domainOptionsImpairment[0],
-      selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
+      // selectedDomain: domainSubdomain.domainOptionsImpairment[0],
+      // selectedSubDomain: domainSubdomain.subdomainOptionsImpairment[0],
+      selectedDomain: this.state.optionsDomainImp[0],
+      selectedSubDomain: this.state.optionsSubDomainImp[0],
       selectedCareProvider: this.state.careProvider[0],
       }, () => this.getReports());
   }
@@ -262,30 +352,37 @@ handleChangeUser = selectedCareProvider => {
       height: 500,
       width: 1250
     };
-    let filteredOptionsImp;
-    if (this.state.selectedDomain) {
-      filteredOptionsImp = domainSubdomain.subdomainOptionsImpairment.filter(
-        o => o.link === this.state.selectedDomain.value
+  let filteredOptionsImp;
+  if (this.state.selectedDomain) {
+    filteredOptionsImp = this.state.optionsSubDomainImp.filter(
+          o => o.link === this.state.selectedDomain.value
       );
-    }
-    let filteredOptionsCapPer;
-    if (this.state.selectedDomain) {
-      filteredOptionsCapPer = domainSubdomain.subdomainOptionsCapPer.filter(
-        o => o.link === this.state.selectedDomain.value
+  }
+  let filteredOptionsCapPer;
+  if (this.state.selectedDomain) {
+    filteredOptionsCapPer = this.state.optionsSubDomainCapPer.filter(
+          o => o.link === this.state.selectedDomain.value
       );
-    }
+  }
+  let filteredOptionsEnv;
+  if (this.state.selectedDomain) {
+    filteredOptionsEnv = this.state.optionsSubDomainEnv.filter(
+          o => o.link === this.state.selectedDomain.value
+      );
+  }
 
 
-    if (this.state.selectedReportCategory.value === 'Impairment of Body Functions') {
-      var optdomain = domainSubdomain.domainOptionsImpairment;
-      var optsubdomain = filteredOptionsImp;
-    }
-    else if (this.state.selectedReportCategory.value === 'Capacity and Performance') {
-      var optdomain = domainSubdomain.domainOptionsCapPer;
-      var optsubdomain = filteredOptionsCapPer;
-    }
-    else if (this.state.selectedReportCategory.value === 'Environment') {
-      var optdomain = domainSubdomain.domainOptionsEnv;
+  if (this.state.selectedReportCategory.value==='Impairment of Body Functions'){
+   var optdomain = this.state.optionsDomainImp;
+   var optsubdomain = filteredOptionsImp;
+  }
+  else if (this.state.selectedReportCategory.value==='Capacity and Performance'){
+  var optdomain = this.state.optionsDomainCapPer;
+  var optsubdomain = filteredOptionsCapPer;
+  }
+  else if (this.state.selectedReportCategory.value==='Environment'){
+    var optdomain = this.state.optionsDomainEnv;
+    var optsubdomain = filteredOptionsEnv;
     }
 
 
