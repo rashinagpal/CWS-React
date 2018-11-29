@@ -119,7 +119,7 @@ class NewFunctionalScorePage extends Component {
       let Domain = this.state.selectedDomain.value;
       let SubDomain = this.state.selectedSubDomain.value;
       let CareProvider = this.state.selectedCareProvider.value;
-      if (this.state.selectedDomain.value === "All") {
+      if ((this.state.selectedDomain.value === "All")&&(this.state.selectedSubDomain.value==="All")&&(this.state.selectedCareProvider.value==="All")) {
         rootRef.on("child_added", snapshot => {
           // Store all the labels in array
           data.push(snapshot.val());
@@ -165,9 +165,12 @@ class NewFunctionalScorePage extends Component {
           });
         });
       }
-     else if((this.state.selectedDomain.value!=="All")
+     else if(((this.state.selectedDomain.value!=="All")
      &&(this.state.selectedSubDomain.value!=="All")
-     &&(this.state.selectedCareProvider.value!=="All"))
+     &&(this.state.selectedCareProvider.value!=="All"))||
+     ((this.state.selectedDomain.value==="All")
+     &&(this.state.selectedSubDomain.value==="All")
+     &&(this.state.selectedCareProvider.value!=="All")))
     {
       rootRef.orderByChild("careProvider").equalTo(CareProvider).on("child_added", snapshot => {
          // Store all the labels in array
@@ -198,7 +201,7 @@ class NewFunctionalScorePage extends Component {
   };
 
 handleChangeUser = selectedCareProvider => {
-  this.setState({ selectedCareProvider }, () => this.getReports());
+  this.setState({ selectedCareProvider, }, () => this.getReports());
   // const filteredRowData = this.state.rowData.filter((score) => score.careProvider === selectedCareProvider.label);
   // console.log(filteredRowData);
   // this.setState({ selectedCareProvider, rowData: filteredRowData});
